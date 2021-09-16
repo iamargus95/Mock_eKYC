@@ -2,6 +2,7 @@ package main
 
 //Tutorial available at https://golang.org/doc/tutorial/web-service-gin
 import (
+	"iamargus95/eKYC-service-gin/postgres"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,7 @@ func getAlbums(c *gin.Context) {
 }
 
 func main() {
+	postgres.Connect() //Database connected.
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumById)
