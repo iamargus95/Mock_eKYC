@@ -9,10 +9,10 @@ import (
 
 func Connect() *pg.DB {
 	opts := &pg.Options{
-		User:     "db_username",
-		Password: "db_password",
-		Addr:     "localhost:5452",
-		Database: "db_dbname",
+		User:     os.Getenv("USER"),
+		Password: os.Getenv("PASSWORD"),
+		Addr:     os.Getenv("DBPORT"),
+		Database: os.Getenv("NAME"),
 	}
 
 	var db *pg.DB = pg.Connect(opts)
