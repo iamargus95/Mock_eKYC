@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/go-pg/pg"
+
+	controllers "iamargus95/eKYC-service-gin/controllers"
 )
 
 func Connect() *pg.DB {
@@ -23,6 +25,7 @@ func Connect() *pg.DB {
 	}
 
 	log.Printf("Connected to DB.")
-
+	controllers.CreateAlbumTable(db) // <--------- Fails here
+	controllers.InitializeDB(db)
 	return db
 }
