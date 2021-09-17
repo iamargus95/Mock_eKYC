@@ -11,10 +11,10 @@ import (
 
 func Connect() *pg.DB {
 	opts := &pg.Options{
-		User:     os.Getenv("USER"),
+		User:     os.Getenv("DBUSER"),
 		Password: os.Getenv("PASSWORD"),
 		Addr:     os.Getenv("DBPORT"),
-		Database: os.Getenv("NAME"),
+		Database: os.Getenv("DBNAME"),
 	}
 
 	var db *pg.DB = pg.Connect(opts)
@@ -25,7 +25,7 @@ func Connect() *pg.DB {
 	}
 
 	log.Printf("Connected to DB.")
-	controllers.CreateAlbumTable(db) // <--------- Fails here
+	controllers.CreateAlbumTable(db)
 	controllers.InitializeDB(db)
 	return db
 }
