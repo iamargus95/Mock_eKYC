@@ -16,3 +16,4 @@
 golang/eKYC-service-gin/.env
 golang/eKYC-service-gin/postgres/.env
 golang/eKYC-service-gin/controllers/.env
+golang/eKYC-service-gin/index.html

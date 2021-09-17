@@ -10,7 +10,7 @@ import (
 func Routes(router *gin.Engine) {
 	router.GET("/", welcome)
 	router.GET("/albums", controllers.GetAlbums)
-	router.POST("/insert", controllers.PostAlbums)
+	router.POST("/album", controllers.PostAlbums)
 	router.GET("/album/:albumID", controllers.GetAlbumById)
 	router.PUT("/album/:albumID", controllers.EditAlbumByID)
 	router.DELETE("/album/:albumID", controllers.DeleteAlbum)
@@ -22,7 +22,6 @@ func welcome(c *gin.Context) {
 		"status":  200,
 		"message": "Welcome to the Draft API.",
 	})
-	return
 }
 
 func notFound(c *gin.Context) {
@@ -30,5 +29,4 @@ func notFound(c *gin.Context) {
 		"status":  "404",
 		"message": "Route not found.",
 	})
-	return
 }
