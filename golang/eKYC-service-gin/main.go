@@ -9,8 +9,9 @@ import (
 )
 
 func main() {
-	postgres.Connect()      //Database connected.
-	router := gin.Default() // Init router
-	routes.Routes(router)   // Route handlers & Endpoints
+	postgres.ClientConnect() //Client Database connected.
+	postgres.PlansConnect()  //Plans Database connected.
+	router := gin.Default()  // Init router
+	routes.Routes(router)    // Route handlers & Endpoints
 	log.Fatal(router.Run("localhost:8080"))
 }

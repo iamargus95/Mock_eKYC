@@ -9,11 +9,11 @@ import (
 
 func Routes(router *gin.Engine) {
 	router.GET("/", welcome)
-	router.GET("/albums", controllers.GetAlbums)
-	router.POST("/album", controllers.PostAlbums)
-	router.GET("/album/:albumID", controllers.GetAlbumById)
-	router.PUT("/album/:albumID", controllers.EditAlbumByID)
-	router.DELETE("/album/:albumID", controllers.DeleteAlbum)
+	router.GET("/clients", controllers.GetClients)
+	router.POST("/api/v1/signup", controllers.PostClient)
+	router.GET("/client/:clientName", controllers.GetClientByName)
+	router.PUT("/client/:clientName", controllers.EditPlanByName)
+	router.DELETE("/client/:clientName", controllers.DeleteClient)
 	router.NoRoute(notFound)
 }
 
