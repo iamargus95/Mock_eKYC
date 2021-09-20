@@ -5,59 +5,53 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-pg/pg"
-	orm "github.com/go-pg/pg/orm"
+	gorm "github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 //Struct of data
 type AllData struct {
-	Name  string `json:"name" validate:"required,min=2,max=50"`
-	Email string `json:"email" validate:"required,email"`
-	Tier  string `json:"tier"`
+	Name  string
+	Email string
+	Plan  string
 }
 
 type Client struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	gorm.Model
+
+	Name string `gorm:"name" validate:"required,min=2,max=50"`
 }
 
 type Plans struct {
-	Name string `json:"name"`
-	Tier string `json:"tier"`
+	gorm.Model
+
+	ClientID uint
+	Client   Client
+	Email    string `gorm:"email" validate:"required,email,unique_index"`
+	Plan     string `gorm:"plan"`
 }
 
-var dbClientConnect, dbPlanConnect *pg.DB
+var dbConnect *gorm.DB
 
-func InitializeDB(db *pg.DB) {
-	dbClientConnect = db
-	dbPlanConnect = db
+func InitDB(db *gorm.DB) {
+	dbConnect = db
 }
 
-func CreateClientTable(db *pg.DB) error {
+func CreateClientTable(db *gorm.DB) error {
 
-	opts := &orm.CreateTableOptions{
-		IfNotExists: true,
-	}
-
-	err := db.CreateTable(&Client{}, opts)
-	if err != nil {
-		log.Fatalf("Error while creating Clients table, ERROR : %v\n", err)
-		return err
+	dbInfo := db.CreateTable(&Client{})
+	if dbInfo == nil {
+		log.Fatalf("Error while creating Clients table.")
 	}
 	log.Printf("Clients table created.")
 	return nil
 }
 
-func CreatePlansTable(db *pg.DB) error {
+func CreatePlansTable(db *gorm.DB) error {
 
-	opts := &orm.CreateTableOptions{
-		IfNotExists: true,
-	}
-
-	err := db.CreateTable(&Plans{}, opts)
-	if err != nil {
-		log.Fatalf("Error while creating Plans table, ERROR : %v\n", err)
-		return err
+	dbInfo := db.CreateTable(&Plans{})
+	if dbInfo == nil {
+		log.Fatalf("Error while creating Plans table.")
 	}
 	log.Printf("Plans table created.")
 	return nil
@@ -66,12 +60,10 @@ func CreatePlansTable(db *pg.DB) error {
 //getClients responds with the list of all clients as JSON.
 func GetClients(c *gin.Context) {
 
-	var client []Client
-
-	err := dbClientConnect.Model(&client).Select()
-
-	if err != nil {
-		log.Printf("Error while getting all clients, ERROR : %v.\n", err)
+	var client Client
+	dbInfo := dbConnect.Raw("SELECT * FROM clients").Scan(&client)
+	if dbInfo == nil {
+		log.Printf("Error while getting all clients, ERROR : %v.\n", dbInfo)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
 			"Message": "Something went wrong",
@@ -80,7 +72,7 @@ func GetClients(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "All clients.",
+		"message": "All clients",
 		"data":    client,
 	})
 }
@@ -96,29 +88,16 @@ func PostClient(c *gin.Context) {
 
 	name := newData.Name
 	email := newData.Email
-	tier := newData.Tier
+	plan := newData.Plan
 
-	clientErr := dbClientConnect.Insert(&Client{
-		Name:  name,
-		Email: email,
+	planErr := dbConnect.Create(&Plans{
+		Client: Client{Name: name},
+		Email:  email,
+		Plan:   plan,
 	})
 
-	planErr := dbPlanConnect.Insert(&Plans{
-		Name: name,
-		Tier: tier,
-	})
-
-	if clientErr != nil {
-		log.Fatalf("Error while inserting new client into ClientDB, ERROR : %v.\n", clientErr)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Something went wrong.",
-		})
-		return
-	}
-
-	if planErr != nil {
-		log.Fatalf("Error while inserting new plan into PlanDB, ERROR : %v.\n", planErr)
+	if planErr == nil {
+		log.Fatalf("Error while inserting new plan into Plan Table, ERROR : %v.\n", planErr)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  http.StatusBadRequest,
 			"message": "Something went wrong.",
@@ -130,86 +109,5 @@ func PostClient(c *gin.Context) {
 		"status":    http.StatusOK,
 		"accessKey": "10-Char-String",
 		"secretKey": "20-Char-String",
-	})
-}
-
-//Get data by name field
-func GetClientByName(c *gin.Context) {
-
-	name := c.Param("name")
-	targetClient := &Client{Name: name}
-
-	err := dbClientConnect.Select(targetClient)
-
-	if err != nil {
-		log.Printf("ERROR : %v.\n", err)
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "Client not found.",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "Target Client Found.",
-		"data":    targetClient,
-	})
-}
-
-func EditPlanByName(c *gin.Context) {
-
-	clientName := c.Param("clientName")
-
-	var targetPlan AllData
-
-	c.BindJSON(&targetPlan)
-	plan := targetPlan.Tier
-
-	_, err := dbPlanConnect.Model(&Plans{}).Set("tier = ?", plan).Where("name = ?", clientName).Update()
-	if err != nil {
-		log.Printf("Error: %v\n", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  500,
-			"message": "Something went wrong.",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"status":  200,
-		"message": "Client plan changed successfully.",
-	})
-}
-
-func DeleteClient(c *gin.Context) {
-
-	clientName := c.Param("clientName")
-
-	targetClient := &Client{Name: clientName}
-	targetPlan := &Plans{Name: clientName}
-
-	clientErr := dbClientConnect.Delete(targetClient)
-	if clientErr != nil {
-		log.Printf("Error while deleting the client from ClientDB, ERROR: %v.\n", clientErr)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Something went wrong.",
-		})
-		return
-	}
-
-	planErr := dbPlanConnect.Delete(targetPlan)
-	if planErr != nil {
-		log.Printf("Error while deleting the client from PlanDB, ERROR: %v.\n", planErr)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Something went wrong.",
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "Client was deleted successfully.",
 	})
 }
