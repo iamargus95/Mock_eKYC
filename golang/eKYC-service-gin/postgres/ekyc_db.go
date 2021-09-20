@@ -1,52 +1,30 @@
 package postgres
 
 import (
+	"fmt"
 	"log"
 	"os"
 
-	"github.com/go-pg/pg"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 
 	controllers "iamargus95/eKYC-service-gin/controllers"
 )
 
-func ClientConnect() *pg.DB {
-	opts := &pg.Options{
-		User:     os.Getenv("DBUSER"),
-		Password: os.Getenv("PASSWORD"),
-		Addr:     os.Getenv("DBPORT"),
-		Database: os.Getenv("DBCLIENT"),
-	}
+func Connect() *gorm.DB {
 
-	var db *pg.DB = pg.Connect(opts)
+	opts := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s", os.Getenv("HOST"),
+		os.Getenv("DBPORT"), os.Getenv("DBUSER"), os.Getenv("DBNAME"), os.Getenv("PASSWORD"))
 
-	if db == nil {
-		log.Printf("Failed to connect to ClientDB.")
+	db, err := gorm.Open("postgres", opts)
+	if err != nil {
+		log.Printf("Failed to connect to DB.")
 		os.Exit(100)
 	}
 
-	log.Printf("Connected to ClientDB.")
-	controllers.CreateClientTable(db) // ---------> Fails here
-	controllers.InitializeDB(db)
-	return db
-}
-
-func PlansConnect() *pg.DB {
-	opts := &pg.Options{
-		User:     os.Getenv("DBUSER"),
-		Password: os.Getenv("PASSWORD"),
-		Addr:     os.Getenv("DBPORT"),
-		Database: os.Getenv("DBPLAN"),
-	}
-
-	var db *pg.DB = pg.Connect(opts)
-
-	if db == nil {
-		log.Printf("Failed to connect to PlanDB.")
-		os.Exit(100)
-	}
-
-	log.Printf("Connected to PlanDB.")
+	log.Printf("Connected to DB.")
+	controllers.CreateClientTable(db)
 	controllers.CreatePlansTable(db)
-	controllers.InitializeDB(db)
+	controllers.InitDB(db)
 	return db
 }
