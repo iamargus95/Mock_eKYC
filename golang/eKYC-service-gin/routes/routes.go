@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"iamargus95/eKYC-service-gin/controllers"
+	ctrl "iamargus95/eKYC-service-gin/controllers/api/v1"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,8 +9,8 @@ import (
 
 func Routes(router *gin.Engine) {
 	router.GET("/", welcome)
-	router.GET("/clients", controllers.GetClients)
-	router.POST("/api/v1/signup", controllers.PostClient)
+	router.GET("/clients", ctrl.ClientsList)
+	router.POST("/api/v1/signup", ctrl.PostClient) //--------- > Add SQL queries and seed data before implementing this
 	router.NoRoute(notFound)
 }
 
