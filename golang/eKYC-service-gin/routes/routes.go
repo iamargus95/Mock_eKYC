@@ -2,16 +2,22 @@ package routes
 
 import (
 	ctrl "iamargus95/eKYC-service-gin/controllers/api/v1"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Routes(router *gin.Engine) {
+func StartGin() {
+	router := gin.Default() // Init router
 	router.GET("/", welcome)
-	router.GET("/clients", ctrl.ClientsList)
-	router.POST("/api/v1/signup", ctrl.PostClient) //--------- > Add SQL queries and seed data before implementing this
 	router.NoRoute(notFound)
+	api := router.Group("api/v1")
+	{
+		api.GET("/clients", ctrl.ClientsList)
+		api.POST("/signup", ctrl.CreateClient)
+	}
+	log.Fatal(router.Run("localhost:8080"))
 }
 
 func welcome(c *gin.Context) {
