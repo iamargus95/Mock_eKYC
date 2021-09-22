@@ -7,7 +7,7 @@ import (
 )
 
 type ClientService struct {
-	Client models.Clients
+	Client models.Client
 }
 
 func (cs *ClientService) ClientList() map[string]interface{} {
@@ -15,8 +15,9 @@ func (cs *ClientService) ClientList() map[string]interface{} {
 
 	clientData := res.ClientsResponse{
 		ID:    gotClient.ID,
-		Name:  "XYZ",
-		Email: "test@email.com",
+		Name:  gotClient.Name,
+		Email: gotClient.Email,
+		Plan:  gotClient.Plan.Plan,
 	}
 	response := u.Message(400, "This is a list of Clients.")
 	response["data"] = clientData
