@@ -3,7 +3,6 @@ package seed
 import (
 	"iamargus95/eKYC-service-gin/conn"
 	"iamargus95/eKYC-service-gin/models"
-	"log"
 )
 
 var clients = []models.Client{
@@ -20,21 +19,7 @@ var clients = []models.Client{
 }
 
 func Load() {
+
 	db := conn.GetDB()
 
-	err := db.Debug().DropTableIfExists(&models.Client{}, &models.Plan{}).Error
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = db.Debug().AutoMigrate(&models.Client{}, &models.Plan{}).Error
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for i := range clients {
-		err = db.Debug().Model(&models.Client{}).Create(&clients[i]).Error
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
 }
