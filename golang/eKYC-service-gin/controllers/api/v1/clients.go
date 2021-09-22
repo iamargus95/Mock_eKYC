@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"encoding/json"
 	u "iamargus95/eKYC-service-gin/apiHelpers"
+	"iamargus95/eKYC-service-gin/conn"
+	m "iamargus95/eKYC-service-gin/models"
 	v1s "iamargus95/eKYC-service-gin/services/api/v1"
 
 	"github.com/gin-gonic/gin"
@@ -10,24 +11,16 @@ import (
 
 func ClientsList(c *gin.Context) {
 
-	var clientsService v1s.ClientService
+	var clients v1s.ClientService
 
-	err := json.NewDecoder(c.Request.Body).Decode(&clientsService.Client)
+	db := conn.GetDB()
+	err := db.Debug().Model(&m.Client{}).Limit(100).Find(&clients).Error
 	if err != nil {
-		u.Respond(c.Writer, u.Message(1, "Invalid Request."))
+		u.Respond(c.Writer, u.Message(400, "api call failed."))
 		return
 	}
 
-	//call service
-	resp := clientsService.ClientList()
-
+	resp := clients.ClientList()
 	//return response using api helper
 	u.Respond(c.Writer, resp)
-}
-
-func CreateClient(c *gin.Context) { //Fix queries before writing this
-
-	var clientsService v1s.ClientService
-
-	err := json.NewDecoder()
 }
