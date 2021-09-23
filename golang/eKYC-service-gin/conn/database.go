@@ -1,15 +1,16 @@
 package conn
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var db *sql.DB
+var db *gorm.DB
 
 func init() {
 
@@ -17,11 +18,11 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	Dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
 		os.Getenv("HOST"), os.Getenv("DBPORT"), os.Getenv("DBUSER"),
 		os.Getenv("DBNAME"), os.Getenv("PASSWORD"))
 
-	conn, err := sql.Open("postgres", Dsn)
+	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to DB. ERROR: %v", err)
 		os.Exit(100)
@@ -31,6 +32,6 @@ func init() {
 
 }
 
-func GetDB() *sql.DB {
+func GetDB() *gorm.DB {
 	return db
 }

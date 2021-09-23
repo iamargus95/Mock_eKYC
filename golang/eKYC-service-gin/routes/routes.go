@@ -1,11 +1,18 @@
 package routes
 
 import (
-	ctrl "iamargus95/eKYC-service-gin/controllers/api/v1"
 	"log"
 	"net/http"
 
+	ctrl "iamargus95/eKYC-service-gin/controllers/api/v1"
+	v1s "iamargus95/eKYC-service-gin/services/api/v1"
+
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	signupService    v1s.SignupService     = v1s.New()
+	signupController ctrl.SignupController = ctrl.New(signupService)
 )
 
 func StartGin() {
@@ -14,8 +21,9 @@ func StartGin() {
 	router.NoRoute(notFound)
 	api := router.Group("api/v1")
 	{
-		api.GET("/clients", ctrl.ClientsList)
-		// api.POST("/signup", ctrl.CreateClient)
+		api.POST("/signup", func(ctx *gin.Context) {
+			ctx.JSON(200, signupController.Save(ctx))
+		})
 	}
 	log.Fatal(router.Run("localhost:8080"))
 }
