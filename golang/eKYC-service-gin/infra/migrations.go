@@ -21,7 +21,7 @@ func init() {
 	}
 
 	Dsn := fmt.Sprintf("postgres://postgres:%s@localhost:%s/%s?sslmode=disable", os.Getenv("PASSWORD"), os.Getenv("DBPORT"), os.Getenv("DBNAME"))
-	m, err = migrate.New("file://../schema/migrations", Dsn)
+	m, err = migrate.New("file:///home/suraj/git/Mock_eKYC/golang/eKYC-service-gin/schema/migrations/sql", Dsn)
 	if err != nil {
 		log.Fatal(err)
 	}

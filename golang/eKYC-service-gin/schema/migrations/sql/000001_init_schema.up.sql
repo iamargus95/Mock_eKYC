@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS clients(
     id BIGSERIAL PRIMARY KEY,
     client_name VARCHAR(50) UNIQUE NOT NULL,
@@ -10,3 +12,5 @@ CREATE TABLE IF NOT EXISTS plans(
     plan VARCHAR(10),
     CONSTRAINT fk_clients FOREIGN KEY(client_id) REFERENCES clients(id)
 );
+
+COMMIT;
