@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 var db *gorm.DB
@@ -22,7 +22,7 @@ func init() {
 		os.Getenv("HOST"), os.Getenv("DBPORT"), os.Getenv("DBUSER"),
 		os.Getenv("DBNAME"), os.Getenv("PASSWORD"))
 
-	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	conn, err := gorm.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to DB. ERROR: %v", err)
 		os.Exit(100)
