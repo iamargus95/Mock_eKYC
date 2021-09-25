@@ -13,6 +13,14 @@ type Client struct {
 //Plans Structure.
 type Plan struct {
 	gorm.Model
-	ClientID uint
-	Plan     string
+	ClientID uint   `sql:"index"`
+	Plan     string `gorm:"one2one:plan_clients"`
+}
+
+func (t *Client) TableName() string {
+	return "clients"
+}
+
+func (t *Plan) TableName() string {
+	return "plans"
 }
