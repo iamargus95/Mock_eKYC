@@ -11,7 +11,6 @@ func Signup(body v1r.SignupPayload) {
 	var newClient models.Client
 
 	db := conn.GetDB()
-	defer db.Close()
 
 	newClient = models.Client{
 		Name:  body.Name,
