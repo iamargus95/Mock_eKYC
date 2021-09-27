@@ -7,14 +7,14 @@ type Client struct {
 	gorm.Model
 	Name  string
 	Email string
-	Plan  Plan
+	Plan  Plan 
 }
 
 //Plans Structure.
 type Plan struct {
 	gorm.Model
-	ClientID uint   `sql:"index"`
-	Plan     string `gorm:"one2one:plan_clients"`
+	ClientID uint
+	Plan     string
 }
 
 func (t *Client) TableName() string {
