@@ -1,7 +1,0 @@
-BEGIN;
-
-DROP TABLE clients;
-
-DROP TABLE plans;
-
-COMMIT;
