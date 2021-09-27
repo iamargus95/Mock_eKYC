@@ -9,7 +9,8 @@ import (
 func main() {
 
 	db := conn.GetDB()
+	defer db.Close()
+
 	db.Debug().AutoMigrate(&models.Client{}, &models.Plan{})
 	routes.StartGin()
-	defer db.Close()
 }
