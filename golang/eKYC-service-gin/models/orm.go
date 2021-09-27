@@ -7,7 +7,7 @@ type Client struct {
 	gorm.Model
 	Name  string
 	Email string
-	Plan  Plan 
+	Plan  Plan
 }
 
 //Plans Structure.

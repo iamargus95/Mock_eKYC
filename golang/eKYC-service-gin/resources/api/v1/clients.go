@@ -1,7 +1,7 @@
 package v1resources
 
 type Request struct {
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
-	Plan  string `json:"plan," validate:"required,plan"`
+	Name  string `binding:"required"`
+	Email string `binding:"required,email"`
+	Plan  string `binding:"required,oneof=basic advanced enterprise"`
 }
