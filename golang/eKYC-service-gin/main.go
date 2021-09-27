@@ -2,8 +2,8 @@ package main
 
 import (
 	"iamargus95/eKYC-service-gin/conn"
-	"iamargus95/eKYC-service-gin/models"
-	"iamargus95/eKYC-service-gin/routes"
+	"iamargus95/eKYC-service-gin/v1/models"
+	"iamargus95/eKYC-service-gin/v1/routes"
 )
 
 func main() {
