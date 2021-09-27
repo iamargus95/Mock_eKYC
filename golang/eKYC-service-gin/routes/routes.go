@@ -15,7 +15,7 @@ func StartGin() {
 	router.NoRoute(notFound)
 	api := router.Group("api/v1")
 	{
-		api.POST("/signup", ctrl.NewClient)
+		api.POST("/signup", ctrl.Signup)
 	}
 	log.Fatal(router.Run("localhost:8080"))
 }
