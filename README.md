@@ -25,7 +25,7 @@
     ```JSON
     {
         "name":"some-name",
-        "email":"some-email",
-        "plan":"some-plan"
+        "email":"some-email", // Only Valid emails allowed.
+        "plan":"some-plan" //One of basic, advanced, enterprise.
     }
     ```
