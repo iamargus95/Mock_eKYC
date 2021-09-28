@@ -1,4 +1,4 @@
-package v1
+package v1resources
 
 type SignupPayload struct {
 	Name  string `binding:"required"`

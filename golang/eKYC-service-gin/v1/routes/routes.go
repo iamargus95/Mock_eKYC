@@ -1,4 +1,4 @@
-package routes
+package v1routes
 
 import (
 	"log"
