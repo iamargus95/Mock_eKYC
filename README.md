@@ -14,8 +14,8 @@
 ## Build the program
 
 1. Open a terminal inside `/golang/eKYC-service-gin`
-2. Use the command `go build .`
-3. then do `./eKYC-service-gin`
+2. Use the command `make build`
+3. then do `make run`
 
 ## Use Postman to perform the post operation
 
