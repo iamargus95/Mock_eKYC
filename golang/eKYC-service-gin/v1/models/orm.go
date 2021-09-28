@@ -17,20 +17,10 @@ type Plan struct {
 	Plan       string
 }
 
-type MiddleMap struct {
-	gorm.Model
-	ClientID uint
-	PlanID   uint
-}
-
 func (t *Client) TableName() string {
 	return "clients"
 }
 
 func (t *Plan) TableName() string {
 	return "plans"
-}
-
-func (t *MiddleMap) TableName() string {
-	return "middle_map"
 }
