@@ -9,15 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func SignupClient(r *gin.RouterGroup) {
+	r.POST("/signup", ctrl.Signup)
+}
+
 func StartGin() {
-	router := gin.Default() // Init router
-	router.GET("/", welcome)
-	router.NoRoute(notFound)
-	api := router.Group("api/v1")
-	{
-		api.POST("/signup", ctrl.Signup)
-	}
-	log.Fatal(router.Run("localhost:8080"))
+	r := gin.Default() // Init router
+	r.GET("/", welcome)
+	r.NoRoute(notFound)
+	SignupClient(r.Group("/api/v1"))
+	log.Fatal(r.Run("localhost:8080"))
 }
 
 func welcome(c *gin.Context) {
