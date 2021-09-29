@@ -5,8 +5,8 @@ import "gorm.io/gorm"
 //Clients Structure.
 type Client struct {
 	gorm.Model
-	Name  string
-	Email string
+	Name  string `gorm:"unique_index"`
+	Email string `gorm:"unique_index"`
 	Plan  Plan
 }
 
