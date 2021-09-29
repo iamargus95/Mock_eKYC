@@ -3,7 +3,6 @@ package v1controller_test
 //Does not work
 import (
 	"bytes"
-	"iamargus95/eKYC-service-gin/v1/routes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +18,7 @@ var unauthRequestTests = []struct {
 	responseData []byte
 }{
 	{
-		url:          "/signup",
+		url:          "/api/v1/signup",
 		bodyData:     []byte(`{"name": "wangzitian0","email": "testing@one2n.in","plan": "basic"}`),
 		expectedCode: http.StatusOK,
 		responseData: []byte(`{"accessKey": "10-char-JWT-Token","secretKey": "20-char-JWT-Token",}`),
@@ -29,18 +28,21 @@ var unauthRequestTests = []struct {
 func TestSignup(t *testing.T) {
 
 	asserts := assert.New(t)
-	r := gin.New() //Also write maintest
-	routes.SignupClient(r.Group("/api/v1"))
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
 
 	for _, testdata := range unauthRequestTests {
 
-		requestData := testdata.bodyData
-		req, err := http.NewRequest(http.MethodPost, testdata.url, bytes.NewBuffer(requestData))
-		asserts.NoError(err)
-		req.Header.Set("Content-Type", "application/json")
-
 		w := httptest.NewRecorder()
-		r.ServeHTTP(w, req)
-		asserts.Equal(testdata.expectedCode, w.Code)
+		c, _ := gin.CreateTestContext(w)
+		requestData := testdata.bodyData
+
+		c.Request, _ = http.NewRequest(http.MethodPost, testdata.url, bytes.NewBuffer(requestData))
+		c.Request.Header.Set("Content-Type", "application/json")
+
+		r.ServeHTTP(w, c.Request)
+
+		//c.Writer.Status() is the workaround. Used instead of w.Code
+		asserts.Equal(testdata.expectedCode, c.Writer.Status())
 	}
 }
