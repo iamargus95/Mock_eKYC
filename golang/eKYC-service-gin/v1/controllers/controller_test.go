@@ -3,6 +3,7 @@ package v1controller_test
 //Does not work
 import (
 	"bytes"
+	v1controller "iamargus95/eKYC-service-gin/v1/controllers"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -40,9 +41,10 @@ func TestSignup(t *testing.T) {
 		c.Request, _ = http.NewRequest(http.MethodPost, testdata.url, bytes.NewBuffer(requestData))
 		c.Request.Header.Set("Content-Type", "application/json")
 
+		v1controller.Signup(c)
+
 		r.ServeHTTP(w, c.Request)
 
-		//c.Writer.Status() is the workaround. Used instead of w.Code
-		asserts.Equal(testdata.expectedCode, c.Writer.Status())
+		asserts.Equal(testdata.expectedCode, w.Code)
 	}
 }
