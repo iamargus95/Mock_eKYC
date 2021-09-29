@@ -1,6 +1,5 @@
 package v1controller_test
 
-//Does not work
 import (
 	"bytes"
 	v1controller "iamargus95/eKYC-service-gin/v1/controllers"
