@@ -1,9 +1,11 @@
 package v1controller
 
 import (
+	"iamargus95/eKYC-service-gin/middlewares/jwt"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,9 +21,11 @@ func Signup(ctx *gin.Context) {
 		ctx.Abort()
 	} else {
 		v1s.Signup(body)
+		aKey, _ := jwt.GenerateJWT(body.Name)
+		sKey := os.Getenv("MYSIGNINGKEY")
 		ctx.JSON(http.StatusOK, gin.H{
-			"accessKey": "10-char-JWT-Token",
-			"secretKey": "20-char-JWT-Token",
+			"accessKey": aKey,
+			"secretKey": sKey,
 		})
 	}
 
