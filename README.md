@@ -9,6 +9,7 @@
         export DBUSER="postgres"
         export DBNAME="mock_ekyc"
         export PASSWORD="abc123"
+        export MYSIGNINGKEY="this_is_supposed_to_be_a_random_string"
         ```
 
 ## Build the program
@@ -21,7 +22,6 @@
 
 1. Perform the POST operation at `http://localhost:8080/api/v1/signup` with a 
 - request body 
-
     ```JSON
     {
         "name":"some-name",
