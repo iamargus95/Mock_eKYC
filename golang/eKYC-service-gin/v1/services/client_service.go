@@ -6,7 +6,7 @@ import (
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 )
 
-func Signup(body v1r.SignupPayload) {
+func Signup(body v1r.SignupPayload) error {
 
 	var newClient models.Client
 
@@ -20,6 +20,10 @@ func Signup(body v1r.SignupPayload) {
 		},
 	}
 
-	db.Create(&newClient)
+	err := db.Create(&newClient)
+	if err.Error != nil {
+		return err.Error
+	}
 	db.Save(&newClient)
+	return err.Error
 }
