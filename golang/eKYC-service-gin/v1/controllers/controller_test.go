@@ -14,17 +14,15 @@ import (
 
 var unauthRequestTests = []struct {
 	url          string
-	method       string
-	bodyData     string
+	bodyData     []byte
 	expectedCode int
-	responseData string
+	responseData []byte
 }{
 	{
-		"/signup",
-		"POST",
-		`{"user":{"name": "wangzitian0","email": "testing@one2n.in","plan": "basic"}}`,
-		http.StatusOK,
-		`{"accessKey": "10-char-JWT-Token","secretKey": "20-char-JWT-Token",}`,
+		url:          "/signup",
+		bodyData:     []byte(`{"name": "wangzitian0","email": "testing@one2n.in","plan": "basic"}`),
+		expectedCode: http.StatusOK,
+		responseData: []byte(`{"accessKey": "10-char-JWT-Token","secretKey": "20-char-JWT-Token",}`),
 	},
 }
 
@@ -35,14 +33,14 @@ func TestSignup(t *testing.T) {
 	routes.SignupClient(r.Group("/api/v1"))
 
 	for _, testdata := range unauthRequestTests {
+
 		requestData := testdata.bodyData
-		req, err := http.NewRequest(testdata.method, testdata.url, bytes.NewBufferString(requestData))
+		req, err := http.NewRequest(http.MethodPost, testdata.url, bytes.NewBuffer(requestData))
 		asserts.NoError(err)
 		req.Header.Set("Content-Type", "application/json")
 
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
-
 		asserts.Equal(testdata.expectedCode, w.Code)
 	}
 }
