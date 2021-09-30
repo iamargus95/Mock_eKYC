@@ -2,13 +2,18 @@ package v1service
 
 import (
 	"iamargus95/eKYC-service-gin/conn"
+	jwt "iamargus95/eKYC-service-gin/middlewares/jwt"
 	"iamargus95/eKYC-service-gin/v1/models"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
+	"os"
 )
 
 func Signup(body v1r.SignupPayload) error {
 
 	var newClient models.Client
+
+	accessKey, _ := jwt.GenerateJWT(body.Name)
+	secretKey := os.Getenv("MYSIGNINGKEY")
 
 	db := conn.GetDB()
 
@@ -17,6 +22,10 @@ func Signup(body v1r.SignupPayload) error {
 		Email: body.Email,
 		Plan: models.Plan{
 			Plan: body.Plan,
+		},
+		SecretKey: models.SecretKey{
+			Accesskey: accessKey,
+			Secretkey: secretKey,
 		},
 	}
 
