@@ -43,7 +43,7 @@ func init() {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDB.SetConnMaxLifetime(10 * time.Minute)
 
-	db.Debug().AutoMigrate(&models.Client{}, &models.Plan{})
+	db.Debug().AutoMigrate(&models.Client{}, &models.Plan{}, &models.SecretKey{})
 
 }
 
