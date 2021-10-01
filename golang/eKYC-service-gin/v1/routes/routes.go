@@ -13,10 +13,6 @@ func SignupClient(r *gin.RouterGroup) {
 	r.POST("/signup", ctrl.Signup)
 }
 
-// func {
-
-// }
-
 func StartGin() {
 	r := gin.Default() // Init router
 	r.GET("/", Welcome)

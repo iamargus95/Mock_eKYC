@@ -25,14 +25,14 @@ func Signup(ctx *gin.Context) {
 			ctx.JSON(http.StatusForbidden, gin.H{
 				"error": err.Error(),
 			})
-		} else {
-			aKey, _ := jwt.GenerateJWT(body.Name)
-			sKey := os.Getenv("MYSIGNINGKEY")
-			ctx.JSON(http.StatusOK, gin.H{
-				"accessKey": aKey,
-				"secretKey": sKey,
-			})
+			return
 		}
-	}
 
+		aKey, _ := jwt.GenerateJWT(body.Name)
+		sKey := os.Getenv("MYSIGNINGKEY")
+		ctx.JSON(http.StatusOK, gin.H{
+			"accessKey": aKey,
+			"secretKey": sKey,
+		})
+	}
 }
