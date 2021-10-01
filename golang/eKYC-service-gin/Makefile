@@ -6,6 +6,7 @@ build: main.go
 	go build -o eKYC-service-gin.o
 
 run: 
+	docker-compose up -d
 	go run .
 
 clean:

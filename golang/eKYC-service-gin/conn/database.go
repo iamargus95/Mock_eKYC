@@ -20,7 +20,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
 		os.Getenv("HOST"), os.Getenv("DBPORT"), os.Getenv("DBUSER"),
 		os.Getenv("DBNAME"), os.Getenv("PASSWORD"))
 
