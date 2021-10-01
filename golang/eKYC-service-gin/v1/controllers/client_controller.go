@@ -19,20 +19,22 @@ func Signup(ctx *gin.Context) {
 			"errorMessage": err.Error(),
 		})
 		ctx.Abort()
-	} else {
-		err := v1s.Signup(body)
-		if err != nil {
-			ctx.JSON(http.StatusForbidden, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		aKey, _ := jwt.GenerateJWT(body.Name)
-		sKey := os.Getenv("MYSIGNINGKEY")
-		ctx.JSON(http.StatusOK, gin.H{
-			"accessKey": aKey,
-			"secretKey": sKey,
-		})
+		return
 	}
+
+	err = v1s.Signup(body)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"error": err.Error(),
+		})
+		ctx.Abort()
+		return
+	}
+
+	aKey, _ := jwt.GenerateJWT(body.Name)
+	sKey := os.Getenv("MYSIGNINGKEY")
+	ctx.JSON(http.StatusOK, gin.H{
+		"accessKey": aKey,
+		"secretKey": sKey,
+	})
 }
