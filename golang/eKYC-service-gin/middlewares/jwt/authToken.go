@@ -4,18 +4,23 @@ import (
 	"fmt"
 	"os"
 
+	v1r "iamargus95/eKYC-service-gin/v1/resources"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
-func IsValid(tokenString string) (*jwt.Token, error) {
-	return jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		if _, isvalid := t.Method.(*jwt.SigningMethodHMAC); !isvalid {
-			return nil, fmt.Errorf("invalid token %v", t.Header["alg"])
-		}
-		return []byte(os.Getenv("MYSIGNINGKEY")), nil
-	})
-}
+func IsValid(tokenString string) (string, error) {
 
-func DecodeToken(token *jwt.Token) string {
-	return "client"
+	var user string
+	var claims v1r.AuthCustomClaims
+	signingKey := os.Getenv("MYSIGNINGKEY")
+
+	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(signingKey), nil
+	})
+
+	if claims, ok := token.Claims.(*v1r.AuthCustomClaims); ok && token.Valid {
+		user = fmt.Sprintf(claims.User)
+	}
+	return user, err
 }

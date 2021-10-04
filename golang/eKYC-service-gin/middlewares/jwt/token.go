@@ -5,22 +5,17 @@ import (
 	"os"
 	"time"
 
+	v1r "iamargus95/eKYC-service-gin/v1/resources"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
-type authCustomClaims struct {
-	User   string
-	IsUser bool
-	jwt.StandardClaims
-}
-
 var mySigningKey = []byte(os.Getenv("MYSIGNINGKEY"))
 
-func GenerateJWT(user string, isUser bool) (string, error) {
+func GenerateJWT(user string) (string, error) {
 
-	claims := &authCustomClaims{
+	claims := v1r.AuthCustomClaims{
 		user,
-		isUser,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
 			IssuedAt:  time.Now().Unix(),
