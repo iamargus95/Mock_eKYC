@@ -6,7 +6,7 @@ import (
 
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 func IsValid(tokenString string) (string, error) {

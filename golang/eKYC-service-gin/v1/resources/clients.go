@@ -1,6 +1,6 @@
 package v1resources
 
-import "github.com/dgrijalva/jwt-go"
+import "github.com/golang-jwt/jwt"
 
 type SignupPayload struct {
 	Name  string `binding:"required"`

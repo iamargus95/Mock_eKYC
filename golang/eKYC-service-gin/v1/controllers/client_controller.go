@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,7 +33,7 @@ func Signup(ctx *gin.Context) {
 		return
 	}
 
-	aKey, _ := authtoken.GenerateJWT(body.Name, true)
+	aKey, _ := authtoken.GenerateJWT(body.Name)
 	sKey := os.Getenv("MYSIGNINGKEY")
 	ctx.JSON(http.StatusOK, gin.H{
 		"accessKey": aKey,
@@ -64,6 +63,7 @@ func Image(ctx *gin.Context) {
 	}
 
 	token, err := authtoken.IsValid(tokenString)
+	fmt.Println(token)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"Error": err.Error(),
@@ -72,6 +72,5 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	claims := token.Claims.(jwt.MapClaims)
-	fmt.Println(claims)
+	fmt.Printf("token: %v\n", token)
 }
