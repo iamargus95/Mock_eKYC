@@ -5,3 +5,8 @@ type SignupPayload struct {
 	Email string `binding:"required,email"`
 	Plan  string `binding:"required,oneof=basic advanced enterprise"`
 }
+
+type ImagePayload struct {
+	Type string `binding:"required,oneof=face id_card"`
+	File string
+}
