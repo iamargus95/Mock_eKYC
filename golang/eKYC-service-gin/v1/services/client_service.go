@@ -2,7 +2,7 @@ package v1service
 
 import (
 	"iamargus95/eKYC-service-gin/conn"
-	jwt "iamargus95/eKYC-service-gin/middlewares/jwt"
+	authtoken "iamargus95/eKYC-service-gin/middlewares/jwt"
 	"iamargus95/eKYC-service-gin/v1/models"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	"os"
@@ -12,7 +12,7 @@ func Signup(body v1r.SignupPayload) error {
 
 	var newClient models.Client
 
-	accessKey, _ := jwt.GenerateJWT(body.Name)
+	accessKey, _ := authtoken.GenerateJWT(body.Name)
 	secretKey := os.Getenv("MYSIGNINGKEY")
 
 	db := conn.GetDB()

@@ -13,12 +13,17 @@ func SignupClient(r *gin.RouterGroup) {
 	r.POST("/signup", ctrl.Signup)
 }
 
+func ImageUpload(r *gin.RouterGroup) {
+	r.POST("/image", ctrl.Image)
+}
+
 func StartGin() {
 	r := gin.Default() // Init router
 	r.GET("/", Welcome)
 	r.NoRoute(NotFound)
 	routerGroup := r.Group("/api/v1")
 	SignupClient(routerGroup)
+	ImageUpload(routerGroup)
 	log.Fatal(r.Run("localhost:8080"))
 }
 
