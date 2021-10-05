@@ -6,7 +6,6 @@ import (
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -33,11 +32,9 @@ func Signup(ctx *gin.Context) {
 		return
 	}
 
-	aKey, _ := authtoken.GenerateJWT(body.Name)
-	sKey := os.Getenv("MYSIGNINGKEY")
+	aKey := authtoken.JWTService().GenerateToken(body.Name)
 	ctx.JSON(http.StatusOK, gin.H{
 		"accessKey": aKey,
-		"secretKey": sKey,
 	})
 }
 
@@ -62,8 +59,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	token, err := authtoken.IsValid(tokenString)
-	fmt.Println(token)
+	token, err := authtoken.JWTService().ValidateToken(tokenString)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"Error": err.Error(),
@@ -72,5 +68,15 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Printf("token: %v\n", token)
+	client_email, err := authtoken.JWTService().ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"Error": err.Error(),
+		})
+		ctx.Abort()
+		return
+	}
+
+	placeholder := v1s.Image(client_email)
+	fmt.Print(placeholder)
 }
