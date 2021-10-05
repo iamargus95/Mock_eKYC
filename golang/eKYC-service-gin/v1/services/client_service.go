@@ -12,7 +12,7 @@ func Signup(body v1r.SignupPayload) error {
 
 	var newClient models.Client
 
-	accessKey, _ := authtoken.GenerateJWT(body.Name)
+	accessKey := authtoken.JWTService().GenerateToken(body.Name)
 	secretKey := os.Getenv("MYSIGNINGKEY")
 
 	db := conn.GetDB()
@@ -35,4 +35,8 @@ func Signup(body v1r.SignupPayload) error {
 	}
 	db.Save(&newClient)
 	return err.Error
+}
+
+func Image(email string) string {
+	return email
 }
