@@ -10,6 +10,7 @@ type Client struct {
 	Email     string `gorm:"unique_index"`
 	Plan      Plan
 	SecretKey SecretKey
+	Pricing   Pricing
 }
 
 //Plans Structure.
@@ -17,6 +18,7 @@ type Plan struct {
 	ID       uint `gorm:"primaryKey"` //Removing gorm.Model leads to duplicate field creation.
 	ClientID uint
 	Plan     string
+	Pricing  Pricing
 }
 
 func (t *Client) TableName() string {
@@ -39,4 +41,16 @@ type SecretKey struct {
 
 func (t *SecretKey) TableName() string {
 	return "secretkey"
+}
+
+type Pricing struct {
+	ClientID uint
+	PlanID   uint
+	Base     int
+	Api_call int
+	Storage  int
+}
+
+func (t *Pricing) TableName() string {
+	return "pricing"
 }
