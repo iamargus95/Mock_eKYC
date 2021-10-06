@@ -7,7 +7,7 @@ build: main.go
 
 run: 
 	docker-compose up -d --remove-orphans
-	go run .
+	./eKYC-service-gin.o
 
 clean:
 	@echo "Cleaning up..."
