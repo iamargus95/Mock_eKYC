@@ -23,12 +23,22 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
+	github.com/klauspost/cpuid v1.3.1 // indirect
+	github.com/minio/md5-simd v1.1.0 // indirect
+	github.com/minio/sha256-simd v0.1.1 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rs/xid v1.2.1 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
@@ -37,6 +47,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.3 // indirect
+	github.com/minio/minio-go/v7 v7.0.14
 	github.com/stretchr/testify v1.7.0
 	gorm.io/gorm v1.21.15
 )
