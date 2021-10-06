@@ -3,9 +3,10 @@ package v1service
 import (
 	"iamargus95/eKYC-service-gin/conn"
 	authtoken "iamargus95/eKYC-service-gin/middlewares/jwt"
-	"iamargus95/eKYC-service-gin/middlewares/minio"
+	"iamargus95/eKYC-service-gin/minio"
 	"iamargus95/eKYC-service-gin/v1/models"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
+	"mime/multipart"
 )
 
 func Signup(body v1r.SignupPayload) error {
@@ -35,27 +36,29 @@ func Signup(body v1r.SignupPayload) error {
 	return err.Error
 }
 
-func Image(email string, body v1r.ImagePayload) (string, error) {
+func Image(email string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (string, error) {
 
-	var newClient models.Client
+	var newFile models.FileUpload
+	var client models.Client
 
-	uuid, link := minio.StoreFile(body.File)
+	uuid, link := minio.StoreFile(filedata)
 
 	db := conn.GetDB()
 
-	newClient = models.Client{
-		FileUpload: models.FileUpload{
-			Type:       body.Type,
-			BucketLink: link,
-			Size:       int64(body.File.Size),
-		},
+	db.Find(&models.Client{}).Where("email = ?", email).Scan(&client)
+
+	newFile = models.FileUpload{
+		ClientID:   client.ID,
+		Type:       fileType.Type,
+		BucketLink: link,
+		Size:       int64(filedata.Size),
 	}
 
-	err := db.Create(&newClient)
+	err := db.Create(&newFile)
 	if err != nil {
 		return uuid, err.Error
 	}
 
-	db.Save(&newClient)
+	db.Save(&newFile)
 	return uuid, err.Error
 }
