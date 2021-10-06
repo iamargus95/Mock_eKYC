@@ -6,11 +6,11 @@ build: main.go
 	go build -o eKYC-service-gin.o
 
 run: 
-	docker-compose up -d
+	docker-compose up -d --remove-orphans
 	go run .
 
 clean:
 	@echo "Cleaning up..."
 	docker-compose down
-	rm eKYC-service-gin.o minio
+	rm eKYC-service-gin.o
 	go clean
