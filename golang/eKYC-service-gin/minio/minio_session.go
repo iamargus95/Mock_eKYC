@@ -11,14 +11,14 @@ var minioclient *minio.Client
 
 func init() {
 
-	endpoint := "172.19.0.3:9090"
-	accessKeyID := "minio123"
-	secretAccessKey := "minio456" //Doubtful
+	endpoint := "localhost:9090"
+	accessKeyID := "myaccesskey"
+	secretAccessKey := "mysecretkey"
 
 	// Initialize minio client object.
 	newClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: true,
+		Secure: false,
 	})
 	if err != nil {
 		log.Fatalln(err)
