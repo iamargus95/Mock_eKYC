@@ -11,5 +11,6 @@ run:
 
 clean:
 	@echo "Cleaning up..."
-	rm eKYC-service-gin
+	docker-compose down
+	rm eKYC-service-gin.o minio
 	go clean
