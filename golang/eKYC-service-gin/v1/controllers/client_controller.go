@@ -77,7 +77,7 @@ func Image(ctx *gin.Context) {
 	}
 
 	var body v1r.ImagePayload
-	err = ctx.BindJSON(&body)
+	err = ctx.Bind(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -86,7 +86,16 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	uuid, err := v1s.Image(email, body)
+	file, header, err := ctx.Request.FormFile("file")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": err.Error(),
+		})
+		ctx.Abort()
+		return
+	}
+
+	uuid, err := v1s.Image(email, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
