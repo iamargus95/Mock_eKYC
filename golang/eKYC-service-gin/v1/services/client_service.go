@@ -36,16 +36,19 @@ func Signup(body v1r.SignupPayload) error {
 	return err.Error
 }
 
-func Image(email string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (string, error) {
+func Image(name string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (string, error) {
 
-	var newFile models.FileUpload
 	var client models.Client
-
-	uuid, link := minio.StoreFile(filedata)
+	var newFile models.FileUpload
 
 	db := conn.GetDB()
 
-	db.Find(&models.Client{}).Where("email = ?", email).Scan(&client)
+	err := db.Table("clients").Select("*").Where("name = ?", name).Scan(&client)
+	if err.Error != nil {
+		return "Error1", err.Error //troubleshooting
+	}
+
+	uuid, link := minio.StoreFile(filedata)
 
 	newFile = models.FileUpload{
 		ClientID:   client.ID,
@@ -54,9 +57,9 @@ func Image(email string, file multipart.File, filedata *multipart.FileHeader, fi
 		Size:       int64(filedata.Size),
 	}
 
-	err := db.Create(&newFile)
+	err = db.Create(&newFile)
 	if err != nil {
-		return uuid, err.Error
+		return "Error2", err.Error //troubleshooting
 	}
 
 	db.Save(&newFile)
