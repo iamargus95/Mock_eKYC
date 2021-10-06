@@ -1,7 +1,6 @@
 package v1controller
 
 import (
-	"fmt"
 	authtoken "iamargus95/eKYC-service-gin/middlewares/jwt"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
@@ -17,7 +16,7 @@ func Signup(ctx *gin.Context) {
 	err := ctx.BindJSON(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"errorMessage": err.Error(),
+			"Error": err.Error(),
 		})
 		ctx.Abort()
 		return
@@ -26,7 +25,7 @@ func Signup(ctx *gin.Context) {
 	err = v1s.Signup(body)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{
-			"error": err.Error(),
+			"Error": err.Error(),
 		})
 		ctx.Abort()
 		return
@@ -34,7 +33,7 @@ func Signup(ctx *gin.Context) {
 
 	aKey := authtoken.JWTService().GenerateToken(body.Name)
 	ctx.JSON(http.StatusOK, gin.H{
-		"accessKey": aKey,
+		"access_key": aKey,
 	})
 }
 
@@ -68,7 +67,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	client_email, err := authtoken.JWTService().ParseToken(token)
+	email, err := authtoken.JWTService().ParseToken(token)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"Error": err.Error(),
@@ -77,6 +76,26 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	placeholder := v1s.Image(client_email)
-	fmt.Print(placeholder)
+	var body v1r.ImagePayload
+	err = ctx.BindJSON(&body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": err.Error(),
+		})
+		ctx.Abort()
+		return
+	}
+
+	uuid, err := v1s.Image(email, body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": err.Error(),
+		})
+		ctx.Abort()
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"imageID": uuid,
+	})
 }
