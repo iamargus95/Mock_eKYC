@@ -67,7 +67,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	email, err := authtoken.JWTService().ParseToken(token)
+	name, err := authtoken.JWTService().ParseToken(token)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"Error": err.Error(),
@@ -95,7 +95,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	uuid, err := v1s.Image(email, file, header, body)
+	uuid, err := v1s.Image(name, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
