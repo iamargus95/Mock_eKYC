@@ -9,6 +9,6 @@ type SignupPayload struct {
 }
 
 type ImagePayload struct {
-	Type string                `binding:"required,oneof=face id_card"`
-	File *multipart.FileHeader `binding:"required"`
+	Type string                `form:"type" binding:"required,oneof=face id_card"`
+	File *multipart.FileHeader `form:"file" binding:"required"`
 }
