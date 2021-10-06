@@ -9,13 +9,13 @@ import (
 )
 
 type JWTInterface interface {
-	GenerateToken(email string) string
+	GenerateToken(Name string) string
 	ValidateToken(token string) (*jwt.Token, error)
 	ParseToken(token *jwt.Token) (string, error)
 }
 
 type authCustomClaims struct {
-	Email string
+	Name string
 	jwt.StandardClaims
 }
 
@@ -30,9 +30,9 @@ func JWTService() JWTInterface {
 	}
 }
 
-func (authtoken *jwtServices) GenerateToken(email string) string {
+func (authtoken *jwtServices) GenerateToken(name string) string {
 	claims := &authCustomClaims{
-		email,
+		name,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -60,13 +60,13 @@ func (authtoken *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, er
 
 func (authtoken *jwtServices) ParseToken(token *jwt.Token) (string, error) {
 
-	var email string
+	var name string
 	var err error
 	if claims, ok := token.Claims.(*authCustomClaims); ok && token.Valid {
-		email = fmt.Sprintf(claims.Email)
+		name = fmt.Sprintf(claims.Name)
 	} else {
 		err = fmt.Errorf("token validation failed")
 	}
 
-	return email, err
+	return name, err
 }
