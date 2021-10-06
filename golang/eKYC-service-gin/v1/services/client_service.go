@@ -28,12 +28,12 @@ func Signup(body v1r.SignupPayload) error {
 		},
 	}
 
-	err := db.Create(&newClient)
-	if err.Error != nil {
-		return err.Error
+	dbtranx := db.Create(&newClient)
+	if dbtranx.Error != nil {
+		return dbtranx.Error
 	}
 	db.Save(&newClient)
-	return err.Error
+	return nil
 }
 
 func Image(name string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (string, error) {
@@ -43,9 +43,9 @@ func Image(name string, file multipart.File, filedata *multipart.FileHeader, fil
 
 	db := conn.GetDB()
 
-	err := db.Table("clients").Select("*").Where("name = ?", name).Scan(&client)
-	if err.Error != nil {
-		return "Error1", err.Error //troubleshooting
+	dbtranx := db.Table("clients").Select("*").Where("name = ?", name).Scan(&client)
+	if dbtranx.Error != nil {
+		return "Error:", dbtranx.Error //troubleshooting
 	}
 
 	uuid, link := minio.StoreFile(filedata)
@@ -57,11 +57,11 @@ func Image(name string, file multipart.File, filedata *multipart.FileHeader, fil
 		Size:       int64(filedata.Size),
 	}
 
-	err = db.Create(&newFile)
-	if err != nil {
-		return "Error2", err.Error //troubleshooting
+	dbtranx = db.Create(&newFile)
+	if dbtranx.Error != nil {
+		return "Error:", dbtranx.Error
 	}
 
 	db.Save(&newFile)
-	return uuid, err.Error
+	return uuid, dbtranx.Error
 }
