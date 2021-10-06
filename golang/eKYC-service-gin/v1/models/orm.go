@@ -6,11 +6,12 @@ import "gorm.io/gorm"
 //Clients Structure.
 type Client struct {
 	gorm.Model
-	Name      string `gorm:"unique_index"`
-	Email     string `gorm:"unique_index"`
-	Plan      Plan
-	SecretKey SecretKey
-	Pricing   Pricing
+	Name       string `gorm:"unique_index"`
+	Email      string `gorm:"unique_index"`
+	Plan       Plan
+	SecretKey  SecretKey
+	Pricing    Pricing
+	FileUpload FileUpload
 }
 
 //Plans Structure.
@@ -36,16 +37,27 @@ type SecretKey struct {
 	ID        uint `gorm:"primaryKey"`
 	ClientID  uint
 	Accesskey string
-	Secretkey string
 }
 
 func (t *SecretKey) TableName() string {
 	return "secretkey"
 }
 
+type FileUpload struct {
+	ID         uint `gorm:"primaryKey"`
+	ClientID   uint
+	Type       string
+	BucketLink string
+	Size       int64
+}
+
+func (t *FileUpload) TableName() string {
+	return "FileUpload"
+}
+
 type Pricing struct {
+	ID       uint `gorm:"primaryKey"`
 	ClientID uint
-	PlanID   uint
 	Base     int
 	Api_call int
 	Storage  int
