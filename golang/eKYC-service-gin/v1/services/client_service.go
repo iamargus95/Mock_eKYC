@@ -38,8 +38,9 @@ func Signup(body v1r.SignupPayload) error {
 	return nil
 }
 
-func Image(name string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) error {
+func Image(name string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (uuid.UUID, error) {
 
+	var Nil uuid.UUID
 	var client models.Client
 	var newFile models.FileUpload
 
@@ -47,7 +48,7 @@ func Image(name string, file multipart.File, filedata *multipart.FileHeader, fil
 
 	dbtranx := db.Table("clients").Select("*").Where("name = ?", name).Scan(&client)
 	if dbtranx.Error != nil {
-		return dbtranx.Error
+		return Nil, dbtranx.Error
 	}
 
 	minio.StoreFile(filedata)
@@ -62,9 +63,9 @@ func Image(name string, file multipart.File, filedata *multipart.FileHeader, fil
 
 	dbtranx = db.Create(&newFile)
 	if dbtranx.Error != nil {
-		return dbtranx.Error
+		return Nil, dbtranx.Error
 	}
 
 	db.Save(&newFile)
-	return dbtranx.Error
+	return uuid, dbtranx.Error
 }
