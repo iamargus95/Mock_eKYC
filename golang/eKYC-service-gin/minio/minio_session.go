@@ -11,7 +11,7 @@ var minioclient *minio.Client
 
 func init() {
 
-	endpoint := "localhost:9090"
+	endpoint := "localhost:9000"
 	accessKeyID := "myaccesskey"
 	secretAccessKey := "mysecretkey"
 
