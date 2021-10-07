@@ -49,10 +49,10 @@ func (authtoken *jwtServices) GenerateToken(name string) string {
 }
 
 func (authtoken *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
+
 	return jwt.ParseWithClaims(encodedToken, &authCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
 			return nil, fmt.Errorf("invalid token: %s", token.Header["alg"])
-
 		}
 		return []byte(authtoken.secretKey), nil
 	})
