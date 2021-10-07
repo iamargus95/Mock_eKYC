@@ -60,7 +60,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	err = v1s.Image(name, file, header, body)
+	uuid, err := v1s.Image(name, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -70,6 +70,6 @@ func Image(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"imageID": "UUID",
+		"imageID": uuid,
 	})
 }
