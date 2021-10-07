@@ -1,11 +1,11 @@
 package v1controller
 
 import (
-	authtoken "iamargus95/eKYC-service-gin/middlewares/jwt"
+	authtoken "iamargus95/eKYC-service-gin/jwt"
+	"iamargus95/eKYC-service-gin/middlewares"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,45 +39,10 @@ func Signup(ctx *gin.Context) {
 
 func Image(ctx *gin.Context) {
 
-	auth := ctx.Request.Header.Get("Authorization")
-	if auth == "" {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"Error": "No Authorization Header found.",
-		})
-		ctx.Abort()
-		return
-	}
-
-	tokenString := strings.TrimPrefix(auth, "Bearer")
-	tokenString = strings.TrimSpace(tokenString)
-	if tokenString == auth {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"Error": "Could not find bearer token.",
-		})
-		ctx.Abort()
-		return
-	}
-
-	token, err := authtoken.JWTService().ValidateToken(tokenString)
-	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"Error": err.Error(),
-		})
-		ctx.Abort()
-		return
-	}
-
-	name, err := authtoken.JWTService().ParseToken(token)
-	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"Error": err.Error(),
-		})
-		ctx.Abort()
-		return
-	}
+	name := middlewares.ValidHeader(ctx)
 
 	var body v1r.ImagePayload
-	err = ctx.Bind(&body)
+	err := ctx.Bind(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -95,7 +60,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	uuid, err := v1s.Image(name, file, header, body)
+	err = v1s.Image(name, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -105,6 +70,6 @@ func Image(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"imageID": uuid,
+		"imageID": "UUID",
 	})
 }
