@@ -2,7 +2,7 @@ package v1service
 
 import (
 	"iamargus95/eKYC-service-gin/conn"
-	authtoken "iamargus95/eKYC-service-gin/middlewares/jwt"
+	authtoken "iamargus95/eKYC-service-gin/jwt"
 	"iamargus95/eKYC-service-gin/minio"
 	"iamargus95/eKYC-service-gin/v1/models"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
@@ -36,7 +36,7 @@ func Signup(body v1r.SignupPayload) error {
 	return nil
 }
 
-func Image(name string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (string, error) {
+func Image(name string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) error {
 
 	var client models.Client
 	var newFile models.FileUpload
@@ -45,23 +45,22 @@ func Image(name string, file multipart.File, filedata *multipart.FileHeader, fil
 
 	dbtranx := db.Table("clients").Select("*").Where("name = ?", name).Scan(&client)
 	if dbtranx.Error != nil {
-		return "Error:", dbtranx.Error //troubleshooting
+		return dbtranx.Error
 	}
 
-	uuid, link := minio.StoreFile(filedata)
+	minio.StoreFile(filedata)
 
 	newFile = models.FileUpload{
-		ClientID:   client.ID,
-		Type:       fileType.Type,
-		BucketLink: link,
-		Size:       int64(filedata.Size),
+		ClientID: client.ID,
+		Type:     fileType.Type,
+		Size:     int64(filedata.Size),
 	}
 
 	dbtranx = db.Create(&newFile)
 	if dbtranx.Error != nil {
-		return "Error:", dbtranx.Error
+		return dbtranx.Error
 	}
 
 	db.Save(&newFile)
-	return uuid, dbtranx.Error
+	return dbtranx.Error
 }
