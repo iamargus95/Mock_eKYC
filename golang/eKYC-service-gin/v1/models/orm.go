@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 //Structs for api/v1/signup
 //Clients Structure.
@@ -43,10 +46,10 @@ func (t *SecretKey) TableName() string {
 
 type FileUpload struct {
 	gorm.Model
-	ClientID   uint
-	Type       string
-	BucketLink string
-	Size       int64
+	ClientID uint
+	Type     string
+	UUID     uuid.UUID
+	Size     int64
 }
 
 func (t *FileUpload) TableName() string {
