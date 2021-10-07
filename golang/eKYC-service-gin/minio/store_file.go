@@ -2,13 +2,12 @@ package minio
 
 import (
 	"context"
-	"fmt"
 	"mime/multipart"
 
 	"github.com/minio/minio-go/v7"
 )
 
-func StoreFile(file *multipart.FileHeader) (string, string) {
+func StoreFile(file *multipart.FileHeader) error {
 
 	data, _ := file.Open()
 	defer data.Close()
@@ -17,11 +16,8 @@ func StoreFile(file *multipart.FileHeader) (string, string) {
 	mc := GetMinio()
 
 	size := file.Size
-	uploadInfo, err := mc.PutObject(context.Background(), "clients", name, data, size,
+	_, err := mc.PutObject(context.Background(), "clients", name, data, size,
 		minio.PutObjectOptions{ContentType: "application/octet-stream"})
 
-	fmt.Println(err)
-	uuid := uploadInfo.ETag
-	link := uploadInfo.Location
-	return uuid, link
+	return err
 }
