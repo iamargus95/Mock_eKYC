@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	authtoken "iamargus95/eKYC-service-gin/jwt"
+	"iamargus95/eKYC-service-gin/middlewares"
 	ctrl "iamargus95/eKYC-service-gin/v1/controllers"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +16,7 @@ func SignupClient(r *gin.RouterGroup) {
 }
 
 func ImageUpload(r *gin.RouterGroup) {
-	r.POST("/image", ctrl.Image)
+	r.POST("/image", ctrl.Image, middlewares.EnsureLoggedIn(authtoken.JWTService()))
 }
 
 func StartGin() {
