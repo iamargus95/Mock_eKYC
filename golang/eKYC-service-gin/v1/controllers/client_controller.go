@@ -2,7 +2,6 @@ package v1controller
 
 import (
 	authtoken "iamargus95/eKYC-service-gin/jwt"
-	"iamargus95/eKYC-service-gin/middlewares"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
 	"net/http"
@@ -39,8 +38,6 @@ func Signup(ctx *gin.Context) {
 
 func Image(ctx *gin.Context) {
 
-	name := middlewares.Authenticate(ctx)
-
 	var body v1r.ImagePayload
 	err := ctx.Bind(&body)
 	if err != nil {
@@ -60,6 +57,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
+	name := ctx.GetHeader("client_name")
 	uuid, err := v1s.ImageUpload(name, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
