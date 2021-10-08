@@ -11,13 +11,14 @@ import (
 
 func ValidHeader(ctx *gin.Context) string {
 
+	var nilString string
 	auth := ctx.Request.Header.Get("Authorization")
 	if auth == "" {
 		ctx.JSON(http.StatusForbidden, gin.H{
 			"Error": "No Authorization Header found.",
 		})
 		ctx.Abort()
-		return ""
+		return nilString
 	}
 
 	tokenString := strings.TrimPrefix(auth, "Bearer")
@@ -27,7 +28,7 @@ func ValidHeader(ctx *gin.Context) string {
 			"Error": "Could not find bearer token.",
 		})
 		ctx.Abort()
-		return ""
+		return nilString
 	}
 
 	token, err := authtoken.JWTService().ValidateToken(tokenString)
@@ -36,7 +37,7 @@ func ValidHeader(ctx *gin.Context) string {
 			"Error": err.Error(),
 		})
 		ctx.Abort()
-		return ""
+		return nilString
 	}
 
 	name, err := authtoken.JWTService().ParseToken(token)
@@ -45,7 +46,7 @@ func ValidHeader(ctx *gin.Context) string {
 			"Error": err.Error(),
 		})
 		ctx.Abort()
-		return ""
+		return nilString
 	}
 
 	return name
