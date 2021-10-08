@@ -6,6 +6,7 @@ build: main.go
 	go build -o eKYC-service-gin.o
 
 run: 
+	make build
 	docker-compose up -d --remove-orphans
 	./eKYC-service-gin.o
 
