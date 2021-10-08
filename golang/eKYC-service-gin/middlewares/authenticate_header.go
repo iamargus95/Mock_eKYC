@@ -48,6 +48,7 @@ func EnsureLoggedIn(authtoken authtoken.JWTInterface) gin.HandlerFunc {
 			return
 		}
 
+		ctx.JSON(http.StatusOK, gin.H{})
 		ctx.Set("client_name", name)
 		ctx.Next()
 	}
