@@ -39,7 +39,7 @@ func Signup(ctx *gin.Context) {
 
 func Image(ctx *gin.Context) {
 
-	name := middlewares.ValidHeader(ctx)
+	name := middlewares.Authenticate(ctx)
 
 	var body v1r.ImagePayload
 	err := ctx.Bind(&body)
@@ -60,7 +60,7 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	uuid, err := v1s.Image(name, file, header, body)
+	uuid, err := v1s.ImageUpload(name, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
