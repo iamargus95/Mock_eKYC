@@ -1,6 +1,7 @@
 package v1controller
 
 import (
+	"fmt"
 	authtoken "iamargus95/eKYC-service-gin/jwt"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
@@ -57,8 +58,10 @@ func Image(ctx *gin.Context) {
 		return
 	}
 
-	name := ctx.GetHeader("client_name")
-	uuid, err := v1s.ImageUpload(name, file, header, body)
+	ctxData, _ := ctx.Get("client_name")
+	client_name := fmt.Sprint(ctxData)
+
+	uuid, err := v1s.ImageUpload(client_name, file, header, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
