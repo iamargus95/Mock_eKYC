@@ -2,6 +2,7 @@ package v1controller_test
 
 import (
 	"bytes"
+	authtoken "iamargus95/eKYC-service-gin/jwt"
 	v1controller "iamargus95/eKYC-service-gin/v1/controllers"
 	"io/ioutil"
 	"mime/multipart"
@@ -18,13 +19,11 @@ var unauthRequestTests = []struct {
 	url          string
 	bodyData     []byte
 	expectedCode int
-	responseData []byte
 }{
 	{
 		url:          "/api/v1/signup",
-		bodyData:     []byte(`{"name": "wangzitian0","email": "testing@one2n.in","plan": "basic"}`),
+		bodyData:     []byte(`{"name": "testClient","email": "testing@test.in","plan": "basic"}`),
 		expectedCode: http.StatusOK,
-		responseData: []byte(`{"accessKey": "10-char-JWT-Token"}`),
 	},
 }
 
@@ -54,7 +53,6 @@ func TestSignup(t *testing.T) {
 func newfileUploadRequest(uri string, params map[string]string, paramName, path string) *http.Request {
 
 	file, err := os.Open(path)
-
 	if err != nil {
 		return nil
 	}
@@ -65,7 +63,6 @@ func newfileUploadRequest(uri string, params map[string]string, paramName, path 
 	}
 
 	fi, err := file.Stat()
-
 	if err != nil {
 		return nil
 	}
@@ -75,13 +72,11 @@ func newfileUploadRequest(uri string, params map[string]string, paramName, path 
 	writer := multipart.NewWriter(body)
 
 	part, err := writer.CreateFormFile(paramName, fi.Name())
-
 	if err != nil {
 		return nil
 	}
 
 	part.Write(fileContents)
-
 	for key, val := range params {
 		_ = writer.WriteField(key, val)
 	}
@@ -92,12 +87,13 @@ func newfileUploadRequest(uri string, params map[string]string, paramName, path 
 	}
 
 	request, _ := http.NewRequest("POST", uri, body)
-	request.Header.Add("Content-Type", writer.FormDataContentType())
+	request.Header.Set("Content-Type", writer.FormDataContentType())
 	return request
 }
 
 func TestImage(t *testing.T) {
 
+	token := authtoken.JWTService().GenerateToken("testClient")
 	filepath, _ := os.Getwd()
 	filepath += "/test.jpeg"
 	asserts := assert.New(t)
@@ -110,12 +106,12 @@ func TestImage(t *testing.T) {
 	extraparams := map[string]string{
 		"type": "face",
 	}
-	c.Request = newfileUploadRequest("http://localhost:8080/api/v1/image", extraparams, "file", filepath)
-	c.Request.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJOYW1lIjoic3VyYWoiLCJleHAiOjE2MzM3NDgyMTYsImlhdCI6MTYzMzU3NTQxNn0.PUZ-DQfopIqpN3cZXN2tSvXBnVhwsFIyXu36vfergsO")
+	c.Request = newfileUploadRequest("/api/v1/image", extraparams, "file", filepath) //invalid token gen token on the fly
+	c.Request.Header.Set("Authorization", "Bearer "+token)
 
 	v1controller.Image(c)
 
 	r.ServeHTTP(w, c.Request)
-	asserts.Equal(200, w.Result()) //troubleshooting
+	asserts.Equal(200, w.Code)
 
 }
