@@ -27,6 +27,7 @@ var unauthRequestTests = []struct {
 	},
 }
 
+//tests for the endpoint /api/v1/signup
 func TestSignup(t *testing.T) {
 
 	asserts := assert.New(t)
@@ -91,7 +92,8 @@ func newfileUploadRequest(uri string, params map[string]string, paramName, path 
 	return request
 }
 
-func TestImage(t *testing.T) {
+//Tests for the endpoint /api/v1/image
+func TestImageUpload(t *testing.T) {
 
 	token := authtoken.JWTService().GenerateToken("testClient")
 	filepath, _ := os.Getwd()

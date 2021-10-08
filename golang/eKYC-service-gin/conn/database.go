@@ -48,6 +48,7 @@ func init() {
 
 }
 
+// Create a GORM session.
 func GetDB() *gorm.DB {
 	return db
 }

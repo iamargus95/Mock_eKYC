@@ -1,3 +1,4 @@
+//Package authtoken provides a way to generate, validate and parse a JWT.
 package authtoken
 
 import (
@@ -30,6 +31,7 @@ func JWTService() JWTInterface {
 	}
 }
 
+// Generates JWT and uses client name as input string for payload that is to be signed.
 func (authtoken *jwtServices) GenerateToken(name string) string {
 	claims := &authCustomClaims{
 		name,
@@ -48,6 +50,7 @@ func (authtoken *jwtServices) GenerateToken(name string) string {
 	return t
 }
 
+// Validates a given signedString against a secret and returns the JWT with just the payload data.
 func (authtoken *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
 
 	return jwt.ParseWithClaims(encodedToken, &authCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -58,6 +61,8 @@ func (authtoken *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, er
 	})
 }
 
+// Parses a JWT and retrieves payload data from it.
+// Here the payload data is the client name.
 func (authtoken *jwtServices) ParseToken(token *jwt.Token) (string, error) {
 
 	var name string

@@ -17,7 +17,7 @@ type Client struct {
 
 //Plans Structure.
 type Plan struct {
-	ID       uint `gorm:"primaryKey"` //Removing gorm.Model leads to duplicate field creation.
+	ID       uint `gorm:"primaryKey"`
 	ClientID uint
 	Plan     string
 	Pricing  Pricing
@@ -33,7 +33,6 @@ func (t *Plan) TableName() string {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //Structs for api/v1/image
-
 type SecretKey struct {
 	ID        uint `gorm:"primaryKey"`
 	ClientID  uint
