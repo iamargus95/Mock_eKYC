@@ -9,12 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ValidHeader(ctx *gin.Context) string {
+// Authenticates the use the API endpoint /api/v1/image
+
+func Authenticate(ctx *gin.Context) string {
 
 	var nilString string
 	auth := ctx.Request.Header.Get("Authorization")
 	if auth == "" {
-		ctx.JSON(http.StatusForbidden, gin.H{
+		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Error": "No Authorization Header found.",
 		})
 		ctx.Abort()
@@ -24,7 +26,7 @@ func ValidHeader(ctx *gin.Context) string {
 	tokenString := strings.TrimPrefix(auth, "Bearer")
 	tokenString = strings.TrimSpace(tokenString)
 	if tokenString == auth {
-		ctx.JSON(http.StatusForbidden, gin.H{
+		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Error": "Could not find bearer token.",
 		})
 		ctx.Abort()
@@ -33,7 +35,7 @@ func ValidHeader(ctx *gin.Context) string {
 
 	token, err := authtoken.JWTService().ValidateToken(tokenString)
 	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
+		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Error": err.Error(),
 		})
 		ctx.Abort()
@@ -42,7 +44,7 @@ func ValidHeader(ctx *gin.Context) string {
 
 	name, err := authtoken.JWTService().ParseToken(token)
 	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
+		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Error": err.Error(),
 		})
 		ctx.Abort()
