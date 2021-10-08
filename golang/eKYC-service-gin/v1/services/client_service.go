@@ -38,7 +38,7 @@ func Signup(body v1r.SignupPayload) error {
 	return nil
 }
 
-func Image(clientName string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (uuid.UUID, error) {
+func ImageUpload(clientName string, file multipart.File, filedata *multipart.FileHeader, fileType v1r.ImagePayload) (uuid.UUID, error) {
 
 	var Nil uuid.UUID
 	var client models.Client
@@ -46,7 +46,7 @@ func Image(clientName string, file multipart.File, filedata *multipart.FileHeade
 
 	db := conn.GetDB()
 
-	dbtranx := db.Table("clients").Select("*").Where("name = ?", clientName).Scan(&client)
+	dbtranx := db.Table("clients").Select("ID").Where("name = ?", clientName).Scan(&client)
 	if dbtranx.Error != nil {
 		return Nil, dbtranx.Error
 	}
