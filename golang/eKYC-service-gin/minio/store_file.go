@@ -22,6 +22,10 @@ func StoreFile(client, fileType string, file *multipart.FileHeader) uuid.UUID {
 	imageId, _ := uuid.NewUUID()
 	uuid := fmt.Sprintf("%v", imageId) //Convert uuid.UUID to string
 
+	if fileType == "id_card" {
+		fileType = "idcard"
+	}
+
 	_, err := mc.PutObject(context.Background(), fileType, uuid, data, size, //Use FileType of face or id_card as bucket names. Separate the functions and have a CreateBucket func.
 		minio.PutObjectOptions{ContentType: "application/octet-stream", UserTags: map[string]string{"client": client}}) //Create tags for stored image
 
