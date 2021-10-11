@@ -14,7 +14,7 @@ import (
 
 var DB *gorm.DB
 
-func init() {
+func SetupDB() {
 
 	err := godotenv.Load()
 	if err != nil {
