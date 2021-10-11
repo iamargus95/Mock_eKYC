@@ -1,6 +1,7 @@
 package middlewares_test
 
 import (
+	"fmt"
 	authtoken "iamargus95/eKYC-service-gin/jwt"
 	"iamargus95/eKYC-service-gin/middlewares"
 	"net/http"
@@ -8,24 +9,69 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestAuthenticateHeader(t *testing.T) {
+const (
+	AuthKeyHeader  = "Authorization"
+	AuthTypeBearer = "Bearer"
+)
 
-	asserts := assert.New(t)
-	token := authtoken.JWTService().GenerateToken("testClient")
+func addAuthorization(t *testing.T, request *http.Request, tokenMaker authtoken.JWTInterface,
+	authorizationType string, username string) {
 
-	gin.SetMode(gin.TestMode)
-	r := gin.New()
+	token := tokenMaker.GenerateToken(username)
 
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
+	authorizationHeader := fmt.Sprintf("%s %s", AuthTypeBearer, token)
+	request.Header.Set(AuthKeyHeader, authorizationHeader)
+}
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/api/v1/image", nil)
-	c.Request.Header.Add("Authorization", "Bearer "+token)
-	middlewares.EnsureLoggedIn(authtoken.JWTService())
+func TestAuthMiddleware(t *testing.T) {
+	testCases := []struct {
+		name          string
+		setupAuth     func(t *testing.T, request *http.Request, tokenMaker authtoken.JWTInterface)
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker authtoken.JWTInterface) {
+				addAuthorization(t, request, tokenMaker, AuthTypeBearer, "test")
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+		{
+			name: "NotOk",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker authtoken.JWTInterface) {
+				addAuthorization(t, request, tokenMaker, "NotOk", "test1")
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
+	}
 
-	r.ServeHTTP(w, c.Request)
-	asserts.Equal(200, w.Code)
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+
+			gin.SetMode(gin.TestMode)
+			r := gin.New()
+			w := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(w)
+
+			authPath := "/api/v1/image"
+			c.Request, _ = http.NewRequest(http.MethodPost, authPath, nil)
+			r.POST(
+				authPath,
+				middlewares.EnsureLoggedIn(authtoken.JWTService()),
+			)
+
+			tc.setupAuth(t, c.Request, authtoken.JWTService())
+			r.ServeHTTP(w, c.Request)
+			tc.checkResponse(t, w)
+		})
+	}
 }
