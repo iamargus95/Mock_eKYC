@@ -20,7 +20,6 @@ type Plan struct {
 	ID       uint `gorm:"primaryKey"`
 	ClientID uint
 	Plan     string
-	Pricing  Pricing
 }
 
 func (t *Client) TableName() string {
@@ -53,16 +52,4 @@ type FileUpload struct {
 
 func (t *FileUpload) TableName() string {
 	return "file_upload"
-}
-
-type Pricing struct {
-	ID       uint `gorm:"primaryKey"`
-	ClientID uint
-	Base     int
-	Api_call int
-	Storage  int
-}
-
-func (t *Pricing) TableName() string {
-	return "pricing"
 }

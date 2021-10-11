@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
@@ -24,7 +24,7 @@ func init() {
 		os.Getenv("HOST"), os.Getenv("DBPORT"), os.Getenv("DBUSER"),
 		os.Getenv("DBNAME"), os.Getenv("PASSWORD"))
 
-	conn, err := gorm.Open("postgres", dsn)
+	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to DB. ERROR: %v", err)
 		os.Exit(100)
@@ -32,7 +32,7 @@ func init() {
 
 	DB = conn
 
-	sqlDB := DB.DB()
+	sqlDB, _ := DB.DB()
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(10)
@@ -44,6 +44,6 @@ func init() {
 	sqlDB.SetConnMaxLifetime(10 * time.Minute)
 
 	DB.Debug().AutoMigrate(&models.Client{}, &models.Plan{},
-		&models.SecretKey{}, &models.FileUpload{}, &models.Pricing{})
+		&models.SecretKey{}, &models.FileUpload{})
 
 }
