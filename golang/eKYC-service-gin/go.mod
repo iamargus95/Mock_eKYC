@@ -2,10 +2,7 @@ module iamargus95/eKYC-service-gin
 
 go 1.17
 
-require (
-	github.com/gin-gonic/gin v1.7.4
-	github.com/mattn/go-sqlite3 v1.14.8
-)
+require github.com/gin-gonic/gin v1.7.4
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -59,6 +56,5 @@ require (
 	github.com/minio/minio-go/v7 v7.0.14
 	github.com/stretchr/testify v1.7.0
 	gorm.io/driver/postgres v1.1.2
-	gorm.io/driver/sqlite v1.1.6
 	gorm.io/gorm v1.21.15
 )
