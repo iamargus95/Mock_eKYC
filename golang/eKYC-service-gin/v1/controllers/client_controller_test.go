@@ -148,6 +148,8 @@ func TestImageUpload(t *testing.T) {
 	for _, test := range testUpload {
 
 		token := authtoken.JWTService().GenerateToken("testClient")
+		validate, _ := authtoken.JWTService().ValidateToken(token)
+		name, _ := authtoken.JWTService().ParseToken(validate)
 
 		filepath, _ := os.Getwd()
 		filepath += test.filepath
@@ -165,6 +167,7 @@ func TestImageUpload(t *testing.T) {
 
 		c.Request = newfileUploadRequest("/api/v1/image", extraparams, "file", filepath)
 		c.Request.Header.Set("Authorization", "Bearer "+token)
+		c.Set("client_name", name)
 
 		v1controller.Image(c)
 
