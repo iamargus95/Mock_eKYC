@@ -41,15 +41,6 @@ func TestAuthMiddleware(t *testing.T) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
-		{
-			name: "NotOk",
-			setupAuth: func(t *testing.T, request *http.Request, tokenMaker authtoken.JWTInterface) {
-				addAuthorization(t, request, tokenMaker, "NotOk", "test1")
-			},
-			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusUnauthorized, recorder.Code)
-			},
-		},
 	}
 
 	for i := range testCases {
