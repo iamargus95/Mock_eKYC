@@ -22,32 +22,27 @@ var unauthRequestTests = []struct {
 	{
 		// OK
 		bodyData:     []byte(`{"name": "testClient","email": "testing@test.in","plan": "basic"}`),
-		expectedCode: http.StatusOK,
-	},
-	{
-		// Invalid URL
-		bodyData:     []byte(`{"name": "testClient1","email": "testing1@test.in","plan": "basic"}`),
-		expectedCode: http.StatusNotFound,
+		expectedCode: 200,
 	},
 	{
 		// Invalid plan
 		bodyData:     []byte(`{"name": "testClient2","email": "testing2@test.in","plan": "Basic"}`),
-		expectedCode: http.StatusForbidden,
+		expectedCode: 400,
 	},
 	{
 		// Invalid email
 		bodyData:     []byte(`{"name": "testClient3","email": "testing3@in","plan": "basic"}`),
-		expectedCode: http.StatusForbidden,
+		expectedCode: 400,
 	},
 	{
 		// Email not unique
 		bodyData:     []byte(`{"name": "testClient4","email": "testing@test.in","plan": "basic"}`),
-		expectedCode: 400,
+		expectedCode: 403,
 	},
 	{
 		// Name not unique
 		bodyData:     []byte(`{"name": "testClient","email": "testing5@test.in","plan": "basic"}`),
-		expectedCode: 400,
+		expectedCode: 403,
 	},
 }
 
@@ -125,21 +120,25 @@ func TestImageUpload(t *testing.T) {
 		expectedCode int
 	}{
 		{
+			//Valid file type
 			filepath:     "/test.jpeg",
 			imageType:    "face",
 			expectedCode: 200,
 		},
 		{
+			//Valid file type
 			filepath:     "/test.jpeg",
 			imageType:    "id_card",
 			expectedCode: 200,
 		},
 		{
+			//invalid file type
 			filepath:     "/test.jpeg",
 			imageType:    "idcard",
 			expectedCode: 400,
 		},
 		{
+			//invalid file type
 			filepath:     "/test.jpeg",
 			imageType:    "undefined",
 			expectedCode: 400,
@@ -149,8 +148,10 @@ func TestImageUpload(t *testing.T) {
 	for _, test := range testUpload {
 
 		token := authtoken.JWTService().GenerateToken("testClient")
+
 		filepath, _ := os.Getwd()
 		filepath += test.filepath
+
 		asserts := assert.New(t)
 		gin.SetMode(gin.TestMode)
 		r := gin.New()

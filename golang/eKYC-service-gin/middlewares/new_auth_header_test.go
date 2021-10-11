@@ -41,6 +41,15 @@ func TestAuthMiddleware(t *testing.T) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
+		{
+			name: "NotOk",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker authtoken.JWTInterface) {
+				addAuthorization(t, request, tokenMaker, "NotOk", "test1")
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
 	}
 
 	for i := range testCases {
@@ -58,9 +67,6 @@ func TestAuthMiddleware(t *testing.T) {
 			r.POST(
 				authPath,
 				middlewares.EnsureLoggedIn(authtoken.JWTService()),
-				func(ctx *gin.Context) {
-					ctx.JSON(http.StatusOK, gin.H{})
-				},
 			)
 
 			tc.setupAuth(t, c.Request, authtoken.JWTService())
