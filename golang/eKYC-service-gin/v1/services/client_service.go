@@ -16,9 +16,6 @@ func Signup(body v1r.SignupPayload) error {
 	var newClient models.Client
 
 	accessKey := authtoken.JWTService().GenerateToken(body.Name)
-
-	db := conn.GetDB()
-
 	newClient = models.Client{
 		Name:  body.Name,
 		Email: body.Email,
@@ -30,11 +27,11 @@ func Signup(body v1r.SignupPayload) error {
 		},
 	}
 
-	dbtranx := db.Create(&newClient)
+	dbtranx := conn.DB.Create(&newClient)
 	if dbtranx.Error != nil {
 		return dbtranx.Error
 	}
-	db.Save(&newClient)
+	conn.DB.Save(&newClient)
 	return nil
 }
 
@@ -44,9 +41,7 @@ func ImageUpload(clientName string, file multipart.File, filedata *multipart.Fil
 	var client models.Client
 	var newFile models.FileUpload
 
-	db := conn.GetDB()
-
-	dbtranx := db.Table("clients").Select("ID").Where("name = ?", clientName).Scan(&client)
+	dbtranx := conn.DB.Table("clients").Select("ID").Where("name = ?", clientName).Scan(&client)
 	if dbtranx.Error != nil {
 		return Nil, dbtranx.Error
 	}
@@ -60,11 +55,11 @@ func ImageUpload(clientName string, file multipart.File, filedata *multipart.Fil
 		Size:     int64(filedata.Size),
 	}
 
-	dbtranx = db.Create(&newFile)
+	dbtranx = conn.DB.Create(&newFile)
 	if dbtranx.Error != nil {
 		return Nil, dbtranx.Error
 	}
 
-	db.Save(&newFile)
+	conn.DB.Save(&newFile)
 	return uuid, dbtranx.Error
 }
