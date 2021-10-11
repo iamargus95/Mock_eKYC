@@ -23,10 +23,9 @@ func TestAuthenticateHeader(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 
 	c.Request, _ = http.NewRequest(http.MethodPost, "/api/v1/image", nil)
-	c.Request.Header.Set("Authorization", "Bearer "+token)
+	c.Request.Header.Add("Authorization", "Bearer "+token)
 	middlewares.EnsureLoggedIn(authtoken.JWTService())
 
 	r.ServeHTTP(w, c.Request)
-
 	asserts.Equal(200, w.Code)
 }
