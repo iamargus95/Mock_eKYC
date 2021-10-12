@@ -68,35 +68,50 @@ func ImageUpload(clientName string, file multipart.File, filedata *multipart.Fil
 func GetMatch(name string, body v1r.FaceMatchPayload) (int, error) {
 
 	var client models.Client
-	var bucket models.FileUpload
+	var upload models.FileUpload
 
 	dbtranx := conn.DB.Table("clients").Select("ID").Where("name = ?", name).Scan(&client)
 	if dbtranx.Error != nil {
 		return 0, dbtranx.Error
 	}
 
-	dbtranx = conn.DB.Table("file_upload").Select("type").Where("file_upload.client_id = ?", client.ID).
-		Where("UUID = ?", body.Image1).Scan(&bucket)
+	dbtranx = conn.DB.Table("file_upload").Select("type").Where("client_id = ?", client.ID).
+		Where("UUID = ?", body.Image1).Scan(&upload)
 	if dbtranx.Error != nil {
 		return 0, dbtranx.Error
 	}
 
-	_, err := minio.GetFile(body.Image1.String(), bucket.Type)
+	_, err := minio.GetFile(body.Image1.String(), upload.Type)
 	if err != nil {
 		return 0, err
 	}
 
-	dbtranx = conn.DB.Table("file_upload").Select("type").Where("file_upload.client_id = ?", client.ID).
-		Where("UUID = ?", body.Image2).Scan(&bucket)
+	dbtranx = conn.DB.Table("file_upload").Select("type").Where("client_id = ?", client.ID).
+		Where("UUID = ?", body.Image2).Scan(&upload)
 	if dbtranx.Error != nil {
 		return 0, dbtranx.Error
 	}
 
-	_, err = minio.GetFile(body.Image2.String(), bucket.Type)
+	_, err = minio.GetFile(body.Image2.String(), upload.Type)
 	if err != nil {
 		return 0, err
 	}
 
 	score := rs.GenerateScore()
+
+	var newScore = models.FaceMatch{
+		ClientID: client.ID,
+		Image1:   body.Image1,
+		Image2:   body.Image2,
+		Score:    uint(score),
+	}
+
+	dbtranx = conn.DB.Create(&newScore)
+	if dbtranx.Error != nil {
+		return 0, dbtranx.Error
+	}
+
+	conn.DB.Save(&newScore)
+
 	return score, nil
 }
