@@ -78,21 +78,25 @@ func Image(ctx *gin.Context) {
 func FaceMatch(ctx *gin.Context) {
 
 	var body v1r.FaceMatchPayload
+	ctxData, _ := ctx.Get("client_name")
+	client_name := fmt.Sprint(ctxData)
 
 	err := ctx.Bind(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Error": "invalid request",
+			"Error": err.Error(),
 		})
+		ctx.Abort()
+		return
 	}
 
-	ctxData, _ := ctx.Get("client_name")
-	client_name := fmt.Sprint(ctxData)
 	matchScore, err := v1s.GetMatch(client_name, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Error": err,
+			"Error": err.Error(),
 		})
+		ctx.Abort()
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
