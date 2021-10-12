@@ -53,3 +53,15 @@ type FileUpload struct {
 func (t *FileUpload) TableName() string {
 	return "file_upload"
 }
+
+type FaceMatch struct {
+	gorm.Model
+	ClientID uint
+	Image1   uuid.UUID
+	Image2   uuid.UUID
+	Score    uint
+}
+
+func (t *FaceMatch) TableName() string {
+	return "face_match"
+}
