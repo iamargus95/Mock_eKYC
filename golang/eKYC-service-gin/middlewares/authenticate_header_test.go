@@ -1,16 +1,21 @@
-package middlewares_test
+package middlewares
 
 import (
 	"fmt"
 	authtoken "iamargus95/eKYC-service-gin/jwt"
-	"iamargus95/eKYC-service-gin/middlewares"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )
+
+func TestMain(m *testing.M) {
+
+	os.Exit(m.Run())
+}
 
 const (
 	AuthKeyHeader  = "Authorization"
@@ -57,7 +62,7 @@ func TestAuthMiddleware(t *testing.T) {
 			c.Request, _ = http.NewRequest(http.MethodPost, authPath, nil)
 			r.POST(
 				authPath,
-				middlewares.EnsureLoggedIn(authtoken.JWTService()),
+				EnsureLoggedIn(authtoken.JWTService()),
 			)
 
 			tc.setupAuth(t, c.Request, authtoken.JWTService())

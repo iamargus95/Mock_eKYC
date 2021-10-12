@@ -11,6 +11,10 @@ run:
 	docker-compose up -d --remove-orphans
 	./eKYC-service-gin.o
 
+test:
+	docker-compose up -d
+	go test -v ./...
+
 clean:
 	@echo "Cleaning up..."
 	docker-compose down

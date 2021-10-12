@@ -1,14 +1,19 @@
-package routes_test
+package routes
 
 import (
-	"iamargus95/eKYC-service-gin/v1/routes"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+
+	os.Exit(m.Run())
+}
 
 var testWelcome = struct {
 	url          string
@@ -30,7 +35,7 @@ func TestWelcome(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request, _ = http.NewRequest(http.MethodGet, testWelcome.url, nil)
 
-	routes.Welcome(c)
+	Welcome(c)
 
 	r.ServeHTTP(w, c.Request)
 	asserts.Equal(testWelcome.expectedCode, w.Code)
@@ -56,7 +61,7 @@ func TestNotFound(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request, _ = http.NewRequest(http.MethodGet, testNotFound.url, nil)
 
-	routes.NotFound(c)
+	NotFound(c)
 
 	r.ServeHTTP(w, c.Request)
 	asserts.Equal(testNotFound.expectedCode, w.Code)

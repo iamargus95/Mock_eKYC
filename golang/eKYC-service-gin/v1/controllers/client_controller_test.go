@@ -1,9 +1,8 @@
-package v1controller_test
+package v1controller
 
 import (
 	"bytes"
 	authtoken "iamargus95/eKYC-service-gin/jwt"
-	v1controller "iamargus95/eKYC-service-gin/v1/controllers"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -14,6 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+
+	os.Exit(m.Run())
+}
 
 var unauthRequestTests = []struct {
 	bodyData     []byte
@@ -62,7 +66,7 @@ func TestSignup(t *testing.T) {
 		c.Request, _ = http.NewRequest(http.MethodPost, "api/v1/signup", bytes.NewBuffer(requestData))
 		c.Request.Header.Set("Content-Type", "application/json")
 
-		v1controller.Signup(c)
+		Signup(c)
 
 		r.ServeHTTP(w, c.Request)
 
@@ -169,7 +173,7 @@ func TestImageUpload(t *testing.T) {
 		c.Request.Header.Set("Authorization", "Bearer "+token)
 		c.Set("client_name", name)
 
-		v1controller.Image(c)
+		Image(c)
 
 		r.ServeHTTP(w, c.Request)
 		asserts.Equal(test.expectedCode, w.Code)
