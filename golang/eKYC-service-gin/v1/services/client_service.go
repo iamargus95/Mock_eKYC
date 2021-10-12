@@ -63,3 +63,38 @@ func ImageUpload(clientName string, file multipart.File, filedata *multipart.Fil
 	conn.DB.Save(&newFile)
 	return uuid, dbtranx.Error
 }
+
+func GetMatch(name string, body v1r.FaceMatchPayload) (int, error) {
+
+	var client models.Client
+	var bucket models.FileUpload
+
+	dbtranx := conn.DB.Table("clients").Select("ID").Where("name = ?", name).Scan(&client)
+	if dbtranx.Error != nil {
+		return 0, dbtranx.Error
+	}
+
+	dbtranx = conn.DB.Table("file_upload").Select("Type").Where("ClientID = ?", client.ID).
+		Where("UUID = ?", body.Image1).Scan(&bucket)
+	if dbtranx.Error != nil {
+		return 0, dbtranx.Error
+	}
+
+	_, err := minio.GetFile(body.Image1.String(), bucket.Type)
+	if err != nil {
+		return 0, err
+	}
+
+	dbtranx = conn.DB.Table("file_upload").Select("Type").Where("ClientID = ?", client.ID).
+		Where("UUID = ?", body.Image2).Scan(&bucket)
+	if dbtranx.Error != nil {
+		return 0, dbtranx.Error
+	}
+
+	_, err = minio.GetFile(body.Image2.String(), bucket.Type)
+	if err != nil {
+		return 0, err
+	}
+
+	return 75, nil
+}

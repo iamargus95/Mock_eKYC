@@ -19,6 +19,10 @@ func ImageUpload(r gin.IRoutes) {
 	r.POST("/image", ctrl.Image)
 }
 
+func Face_Match(r gin.IRoutes) {
+	r.POST("/face-match", ctrl.FaceMatch)
+}
+
 func StartGin() {
 	r := gin.Default() // Init router
 	r.GET("/", Welcome)
@@ -29,6 +33,7 @@ func StartGin() {
 
 	authRouterGroup := r.Group("/api/v1").Use(middlewares.EnsureLoggedIn(authtoken.JWTService()))
 	ImageUpload(authRouterGroup)
+	Face_Match(authRouterGroup)
 
 	log.Fatal(r.Run("localhost:8080"))
 }

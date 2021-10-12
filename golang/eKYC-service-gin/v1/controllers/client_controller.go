@@ -74,3 +74,19 @@ func Image(ctx *gin.Context) {
 		"imageID": uuid,
 	})
 }
+
+func FaceMatch(ctx *gin.Context) {
+
+	var body v1r.FaceMatchPayload
+
+	err := ctx.Bind(&body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": "invalid request",
+		})
+	}
+
+	ctxData, _ := ctx.Get("client_name")
+	client_name := fmt.Sprint(ctxData)
+	v1s.GetMatch(client_name, body)
+}
