@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Signup controller helps create new clients inthe database, A successful request returns an access key necessary for further operations.
 func Signup(ctx *gin.Context) {
 
 	var body v1r.SignupPayload
@@ -37,6 +38,7 @@ func Signup(ctx *gin.Context) {
 	})
 }
 
+// Image controller helps client upload images to the database, It returns a UUID for the uploaded image.
 func Image(ctx *gin.Context) {
 
 	var body v1r.ImagePayload
@@ -75,6 +77,7 @@ func Image(ctx *gin.Context) {
 	})
 }
 
+// FaceMatch controller helps the clients match 2 images with each other, a match score between 0-100.
 func FaceMatch(ctx *gin.Context) {
 
 	var body v1r.FaceMatchPayload
