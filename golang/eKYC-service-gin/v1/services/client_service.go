@@ -4,6 +4,7 @@ import (
 	"iamargus95/eKYC-service-gin/conn"
 	authtoken "iamargus95/eKYC-service-gin/jwt"
 	"iamargus95/eKYC-service-gin/minio"
+	rs "iamargus95/eKYC-service-gin/randomScore"
 	"iamargus95/eKYC-service-gin/v1/models"
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	"mime/multipart"
@@ -74,7 +75,7 @@ func GetMatch(name string, body v1r.FaceMatchPayload) (int, error) {
 		return 0, dbtranx.Error
 	}
 
-	dbtranx = conn.DB.Table("file_upload").Select("Type").Where("ClientID = ?", client.ID).
+	dbtranx = conn.DB.Table("file_upload").Select("type").Where("file_upload.client_id = ?", client.ID).
 		Where("UUID = ?", body.Image1).Scan(&bucket)
 	if dbtranx.Error != nil {
 		return 0, dbtranx.Error
@@ -85,7 +86,7 @@ func GetMatch(name string, body v1r.FaceMatchPayload) (int, error) {
 		return 0, err
 	}
 
-	dbtranx = conn.DB.Table("file_upload").Select("Type").Where("ClientID = ?", client.ID).
+	dbtranx = conn.DB.Table("file_upload").Select("type").Where("file_upload.client_id = ?", client.ID).
 		Where("UUID = ?", body.Image2).Scan(&bucket)
 	if dbtranx.Error != nil {
 		return 0, dbtranx.Error
@@ -96,5 +97,6 @@ func GetMatch(name string, body v1r.FaceMatchPayload) (int, error) {
 		return 0, err
 	}
 
-	return 75, nil
+	score := rs.GenerateScore()
+	return score, nil
 }

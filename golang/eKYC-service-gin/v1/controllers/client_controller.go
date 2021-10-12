@@ -88,5 +88,14 @@ func FaceMatch(ctx *gin.Context) {
 
 	ctxData, _ := ctx.Get("client_name")
 	client_name := fmt.Sprint(ctxData)
-	v1s.GetMatch(client_name, body)
+	matchScore, err := v1s.GetMatch(client_name, body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": err,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"score": matchScore,
+	})
 }
