@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
 func init() {
 
@@ -30,9 +30,9 @@ func init() {
 		os.Exit(100)
 	}
 
-	db = conn
+	DB = conn
 
-	sqlDB := db.DB()
+	sqlDB := DB.DB()
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(10)
@@ -43,10 +43,7 @@ func init() {
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDB.SetConnMaxLifetime(10 * time.Minute)
 
-	db.Debug().AutoMigrate(&models.Client{}, &models.Plan{}, &models.SecretKey{})
+	DB.Debug().AutoMigrate(&models.Client{}, &models.Plan{},
+		&models.SecretKey{}, &models.FileUpload{})
 
-}
-
-func GetDB() *gorm.DB {
-	return db
 }
