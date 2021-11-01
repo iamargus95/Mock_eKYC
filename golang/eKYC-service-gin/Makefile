@@ -1,15 +1,23 @@
 .PHONY = all clean
-all: build
+all: run
 
 build: main.go
 	@echo "Building binary..."
 	go build -o eKYC-service-gin.o
+	clear
 
 run: 
+	make build
+	docker-compose up -d --remove-orphans
+	./eKYC-service-gin.o
+
+test:
 	docker-compose up -d
-	go run .
+	go test -v ./...
 
 clean:
 	@echo "Cleaning up..."
-	rm eKYC-service-gin
+	docker-compose down
+	rm eKYC-service-gin.o
 	go clean
+	clear

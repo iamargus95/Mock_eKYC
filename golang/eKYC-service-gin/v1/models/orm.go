@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 //Structs for api/v1/signup
 //Clients Structure.
@@ -14,7 +17,7 @@ type Client struct {
 
 //Plans Structure.
 type Plan struct {
-	ID       uint `gorm:"primaryKey"` //Removing gorm.Model leads to duplicate field creation.
+	ID       uint `gorm:"primaryKey"`
 	ClientID uint
 	Plan     string
 }
@@ -29,14 +32,36 @@ func (t *Plan) TableName() string {
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //Structs for api/v1/image
-
 type SecretKey struct {
 	ID        uint `gorm:"primaryKey"`
 	ClientID  uint
 	Accesskey string
-	Secretkey string
 }
 
 func (t *SecretKey) TableName() string {
 	return "secretkey"
+}
+
+type FileUpload struct {
+	gorm.Model
+	ClientID uint
+	Type     string
+	UUID     uuid.UUID
+	Size     int64
+}
+
+func (t *FileUpload) TableName() string {
+	return "file_upload"
+}
+
+type FaceMatch struct {
+	gorm.Model
+	ClientID uint
+	Image1   uuid.UUID
+	Image2   uuid.UUID
+	Score    uint
+}
+
+func (t *FaceMatch) TableName() string {
+	return "face_match"
 }
