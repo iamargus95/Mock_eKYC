@@ -1,5 +1,4 @@
 # Mock_eKYC
-One2N Consulting assignment 
 
 # Build HTTP APIs for an eKYC use case
 
