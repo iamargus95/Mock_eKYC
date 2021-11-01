@@ -1,6 +1,10 @@
 package v1resources
 
-import "mime/multipart"
+import (
+	"mime/multipart"
+
+	"github.com/google/uuid"
+)
 
 type SignupPayload struct {
 	Name  string `binding:"required"`
@@ -11,4 +15,9 @@ type SignupPayload struct {
 type ImagePayload struct {
 	Type string                `form:"type" binding:"required,oneof=face id_card"`
 	File *multipart.FileHeader `form:"file" binding:"required"`
+}
+
+type FaceMatchPayload struct {
+	Image1 uuid.UUID `binding:"required"`
+	Image2 uuid.UUID `binding:"required"`
 }

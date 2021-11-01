@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -174,6 +175,48 @@ func TestImageUpload(t *testing.T) {
 		c.Set("client_name", name)
 
 		Image(c)
+
+		r.ServeHTTP(w, c.Request)
+		asserts.Equal(test.expectedCode, w.Code)
+	}
+}
+
+func TestFaceMatch(t *testing.T) {
+
+	var testFaceMatch = []struct {
+		name         string
+		bodyData     *strings.Reader
+		expectedCode int
+	}{
+		{
+			name: "ok",
+			bodyData: strings.NewReader(`{
+				"image1":"eb0551fe-2b32-11ec-85e8-38f3abdee1f2",
+				"image2":"db7ac0d8-2b32-11ec-85e8-38f3abdee1f2"
+			}`),
+			expectedCode: 200,
+		},
+	}
+
+	asserts := assert.New(t)
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+
+	for _, test := range testFaceMatch {
+
+		token := authtoken.JWTService().GenerateToken("test")
+		validate, _ := authtoken.JWTService().ValidateToken(token)
+		name, _ := authtoken.JWTService().ParseToken(validate)
+
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+
+		c.Request, _ = http.NewRequest(http.MethodPost, "api/v1/face-match", test.bodyData)
+		c.Request.Header.Set("Authorization", "Bearer "+token)
+		c.Request.Header.Add("Content-Type", "application/json")
+		c.Set("client_name", name)
+
+		FaceMatch(c)
 
 		r.ServeHTTP(w, c.Request)
 		asserts.Equal(test.expectedCode, w.Code)

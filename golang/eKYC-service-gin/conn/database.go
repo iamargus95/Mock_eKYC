@@ -44,6 +44,6 @@ func init() {
 	sqlDB.SetConnMaxLifetime(10 * time.Minute)
 
 	DB.Debug().AutoMigrate(&models.Client{}, &models.Plan{},
-		&models.SecretKey{}, &models.FileUpload{})
+		&models.SecretKey{}, &models.FileUpload{}, &models.FaceMatch{})
 
 }
