@@ -3,20 +3,25 @@
 1. Create a database in PostgreSQL with the name "mock_ekyc" with the username "postgres".
 2. Keep the password as "abc123"
 3. Create a .env file with the following contents
-    -   ```export DIALECT="postgres"
-        export HOST="localhost"
-        export DBPORT="5432"
-        export DBUSER="postgres"
-        export DBNAME="mock_ekyc"
-        export PASSWORD="abc123"
-        export MYSIGNINGKEY="this_is_supposed_to_be_a_random_string"
-        ```
+ ```
+ export DIALECT="postgres"
+ export HOST="localhost"
+ export DBPORT="5432"
+ export DBUSER="postgres"
+ export DBNAME="mock_ekyc"
+ export PASSWORD="abc123"
+ export MYSIGNINGKEY="this_is_supposed_to_be_a_random_string"
+```
 
 ## Build the program
 
 1. Open a terminal inside `/golang/eKYC-service-gin`
 2. Use the command `make build`
 3. then do `make run`
+4. Use the commands 
+    - `docker exec -it pg_container bash` and then use 
+    - `psql --host=pg_container --dbname=mock_ekyc --username=postgres`
+    - The password is 'abc123'.
 
 ## Use Postman to perform the post operation
 

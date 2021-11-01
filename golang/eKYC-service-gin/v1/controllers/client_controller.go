@@ -6,8 +6,13 @@ import (
 	v1r "iamargus95/eKYC-service-gin/v1/resources"
 	v1s "iamargus95/eKYC-service-gin/v1/services"
 	"net/http"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	SIZE = 5000000
 )
 
 // Signup controller helps create new clients inthe database, A successful request returns an access key necessary for further operations.
@@ -55,6 +60,28 @@ func Image(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
+		})
+		ctx.Abort()
+		return
+	}
+
+	if header.Size > SIZE {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": "file size should be less than 5MB",
+		})
+		ctx.Abort()
+		return
+	}
+
+	buff := make([]byte, 512) // see http://golang.org/pkg/net/http/#DetectContentType
+	_, _ = file.Read(buff)
+	fileType := http.DetectContentType(buff)
+
+	re, _ := regexp.Compile(fileType)
+	matched := re.FindString("image/png image/jpeg")
+	if matched == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": "Invalid filetype, must be jpeg or png.",
 		})
 		ctx.Abort()
 		return
